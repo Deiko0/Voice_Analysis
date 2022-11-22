@@ -171,7 +171,7 @@ def main():
         st.markdown(f"csvファイルでダウンロード {href}", unsafe_allow_html=True)
         st.write('基本周波数とHNRは平均で計算しています。')
         
-   　st.write('create by Deiko')
+     st.write('create by Deiko')
 
 if __name__ == "__main__":
     _set_block_container_style()
