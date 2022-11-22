@@ -1,0 +1,11 @@
+streamlit
+librosa
+librosa.display
+numpy
+from scipy import signal
+plotly.graph_objects as go
+plotly.express as px
+pandas as pd
+base64
+parselmouth
+from parselmouth.praat import call
