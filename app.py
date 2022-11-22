@@ -136,23 +136,23 @@ def main():
 
         if hnr > 12:
             if ave_fo > 165:
-                if odd_per > even_per+5:
+                if odd_per > even_per+10:
                     st.write('この声は「エネルギー」、「元気」を感じます！')
                 else:
                     st.write('この声は「ピュア」、「透明感」を感じます！')
             else:
-                if odd_per > even_per+5:
+                if odd_per > even_per+10:
                     st.write('この声は「リーダー」、「勇敢」を感じます！')
                 else:
                     st.write('この声は「クール」、「信頼」を感じます！')
         else:
             if ave_fo > 165:
-                if odd_per > even_per+5:
+                if odd_per > even_per+10:
                     st.write('この声は「フレンドリー」、「愛嬌」を感じます！')
                 else:
                     st.write('この声は「ソフト」、「甘い」を感じます！')
             else:
-                if odd_per > even_per+5:
+                if odd_per > even_per+10:
                     st.write('この声は「エレガント」、「妖艶」を感じます！')
                 else:
                     st.write('この声は「ジェントル」、「貫禄」を感じます！')
