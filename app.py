@@ -77,6 +77,7 @@ def _set_block_container_style(
 
 def main():
     st.title('Voice Analysis')
+    st.write('create by Deiko')
     st.subheader('使い方')
     st.write('1. 左のサイドバーを開いて音声を読み込む')
     st.write('2. サイドバーの設定から分析範囲を指定する')
@@ -170,8 +171,6 @@ def main():
         href = f'<a href="data:application/octet-stream;base64,{b64}" download="result.csv">download</a>'
         st.markdown(f"csvファイルでダウンロード {href}", unsafe_allow_html=True)
         st.write('基本周波数とHNRは平均で計算しています。')
-        
-     st.write('create by Deiko')
 
 if __name__ == "__main__":
     _set_block_container_style()
