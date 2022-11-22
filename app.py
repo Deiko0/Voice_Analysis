@@ -77,6 +77,8 @@ def _set_block_container_style(
 
 def main():
     st.title('Voice Analysis')
+    link = '[<span class="hljs-string">Chemesim</span>](<span class="hljs-link">https://twitter.com/deiko_cs</span>)'
+    st.markdown(link, unsafe<span class="hljs-emphasis">_allow_</span>html=True)
     st.subheader('使い方')
     st.write('1. 左のサイドバーを開いて音声を読み込む')
     st.write('2. サイドバーの設定から分析範囲を指定する')
