@@ -169,6 +169,7 @@ def main():
         b64 = base64.b64encode(csv.encode()).decode()
         href = f'<a href="data:application/octet-stream;base64,{b64}" download="result.csv">download</a>'
         st.markdown(f"csvファイルでダウンロード {href}", unsafe_allow_html=True)
+        st.write('基本周波数とHNRは平均で計算しています。')
 
 if __name__ == "__main__":
     _set_block_container_style()
