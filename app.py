@@ -316,12 +316,6 @@ def main():
                     <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
                     <meta name=”twitter:title” content=”Voice Analysis” />
                     <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
-                    <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
-                    data-text="#"
-                    data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
-                    Tweet
-                    </a>
-                    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
                 """
             )
 
