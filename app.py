@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import librosa
 import librosa.display
 import numpy as np
@@ -50,14 +51,10 @@ def calc_fo(wav):
 
 @st.cache
 def measurePitch(wav):
-    if wav == []:
-        hnr = 0
-        return hnr
-    else:
-        sound = parselmouth.Sound(wav)
-        harmonicity = call(sound, "To Harmonicity (cc)", 0.01, 75, 0.1, 1.0)
-        hnr = call(harmonicity, "Get mean", 0, 0)
-        return hnr
+    sound = parselmouth.Sound(wav)
+    harmonicity = call(sound, "To Harmonicity (cc)", 0.01, 75, 0.1, 1.0)
+    hnr = call(harmonicity, "Get mean", 0, 0)
+    return hnr
 
 
 @st.cache
@@ -143,7 +140,7 @@ def main():
 
         st.sidebar.title('設定')
         tgt_ranges = st.sidebar.slider(
-            "分析範囲（秒）", 1, wav_seconds, (0, wav_seconds))
+            "分析範囲（秒）", 0, wav_seconds, (0, wav_seconds))
         st.sidebar.markdown("---")
 
         col1, col2 = st.columns(2)
@@ -311,6 +308,22 @@ def main():
                         col4.write('この声は低音でハスキーで明瞭です！「エレガント」、「妖艶」を感じます！')
                     else:
                         col4.write('この声は低音でハスキーで柔和です！「ジェントル」、「貫禄」を感じます！')
+
+            components.html(
+                """
+                    <meta name=”twitter:card” content=”summary_large_image” />
+                    <meta name=”twitter:site” content=”@deiko_cs” />
+                    <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
+                    <meta name=”twitter:title” content=”Voice Analysis” />
+                    <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
+                    <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
+                    data-text="#"
+                    data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
+                    Tweet
+                    </a>
+                    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                """
+            )
 
             df = pd.DataFrame({"ファイル名": [uploaded_file.name],
                                "基本周波数（Hz）": [ave_fo],
