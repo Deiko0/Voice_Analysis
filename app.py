@@ -290,34 +290,153 @@ def main():
                 if ave_fo > 165:
                     if odd_per > even_per + 10:
                         col4.write('この声は高音でクリアで明瞭です！「エネルギー」、「元気」を感じます！')
+                        components.html(
+                            """
+                                <meta name=”twitter:card” content=”summary_large_image” />
+                                <meta name=”twitter:site” content=”@deiko_cs” />
+                                <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
+                                <meta name=”twitter:title” content=”Voice Analysis” />
+                                <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
+                                <meta name="twitter:image" content="https://keywordmap.jp/academy/wp-content/uploads/2020/03/tmb10-min.png" />
+                                <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
+                                data-text="分析の結果、高音とクリアと明瞭を読み取りました！あなたの声は【元気】、【エネルギー】タイプです！#あなたの声は何タイプ"
+                                data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
+                                Tweet
+                                </a>
+                                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                            """
+                        )
                     else:
                         col4.write('この声は高音でクリアで柔和です！「ピュア」、「透明感」を感じます！')
+                        components.html(
+                            """
+                                <meta name=”twitter:card” content=”summary_large_image” />
+                                <meta name=”twitter:site” content=”@deiko_cs” />
+                                <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
+                                <meta name=”twitter:title” content=”Voice Analysis” />
+                                <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
+                                <meta name="twitter:image" content="https://keywordmap.jp/academy/wp-content/uploads/2020/03/tmb10-min.png" />
+                                <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
+                                data-text="分析の結果、高音とクリアと柔和を読み取りました！あなたの声は【透明】、【ピュア】タイプです！#あなたの声は何タイプ"
+                                data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
+                                Tweet
+                                </a>
+                                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                            """
+                        )
                 else:
                     if odd_per > even_per + 10:
                         col4.write('この声は低音でクリアで明瞭です！「リーダー」、「勇敢」を感じます！')
+                        components.html(
+                            """
+                                <meta name=”twitter:card” content=”summary_large_image” />
+                                <meta name=”twitter:site” content=”@deiko_cs” />
+                                <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
+                                <meta name=”twitter:title” content=”Voice Analysis” />
+                                <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
+                                <meta name="twitter:image" content="https://keywordmap.jp/academy/wp-content/uploads/2020/03/tmb10-min.png" />
+                                <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
+                                data-text="分析の結果、低音とクリアと明瞭を読み取りました！あなたの声は【勇敢】、【リーダー】タイプです！#あなたの声は何タイプ"
+                                data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
+                                Tweet
+                                </a>
+                                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                            """
+                        )
                     else:
                         col4.markdown('この声は低音でクリアで柔和です！「クール」、「信頼」を感じます！')
+                        components.html(
+                            """
+                                <meta name=”twitter:card” content=”summary_large_image” />
+                                <meta name=”twitter:site” content=”@deiko_cs” />
+                                <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
+                                <meta name=”twitter:title” content=”Voice Analysis” />
+                                <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
+                                <meta name="twitter:image" content="https://keywordmap.jp/academy/wp-content/uploads/2020/03/tmb10-min.png" />
+                                <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
+                                data-text="分析の結果、低音とクリアと柔和を読み取りました！あなたの声は【信頼】、【クール】タイプです！#あなたの声は何タイプ"
+                                data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
+                                Tweet
+                                </a>
+                                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                            """
+                        )
             else:
                 if ave_fo > 165:
                     if odd_per > even_per + 10:
                         col4.write('この声は高音でハスキーで明瞭です！「フレンドリー」、「愛嬌」を感じます！')
+                        components.html(
+                            """
+                                <meta name=”twitter:card” content=”summary_large_image” />
+                                <meta name=”twitter:site” content=”@deiko_cs” />
+                                <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
+                                <meta name=”twitter:title” content=”Voice Analysis” />
+                                <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
+                                <meta name="twitter:image" content="https://keywordmap.jp/academy/wp-content/uploads/2020/03/tmb10-min.png" />
+                                <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
+                                data-text="分析の結果、高音とハスキーと明瞭を読み取りました！あなたの声は【愛嬌】、【フレンドリー】タイプです！#あなたの声は何タイプ"
+                                data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
+                                Tweet
+                                </a>
+                                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                            """
+                        )
                     else:
                         col4.write('この声は高音でハスキーで柔和です！「ソフト」、「甘い」を感じます！')
+                        components.html(
+                            """
+                                <meta name=”twitter:card” content=”summary_large_image” />
+                                <meta name=”twitter:site” content=”@deiko_cs” />
+                                <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
+                                <meta name=”twitter:title” content=”Voice Analysis” />
+                                <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
+                                <meta name="twitter:image" content="https://keywordmap.jp/academy/wp-content/uploads/2020/03/tmb10-min.png" />
+                                <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
+                                data-text="分析の結果、高音とハスキーと柔和を読み取りました！あなたの声は【甘い】、【ソフト】タイプです！#あなたの声は何タイプ"
+                                data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
+                                Tweet
+                                </a>
+                                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                            """
+                        )
                 else:
                     if odd_per > even_per + 10:
                         col4.write('この声は低音でハスキーで明瞭です！「エレガント」、「妖艶」を感じます！')
+                        components.html(
+                            """
+                                <meta name=”twitter:card” content=”summary_large_image” />
+                                <meta name=”twitter:site” content=”@deiko_cs” />
+                                <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
+                                <meta name=”twitter:title” content=”Voice Analysis” />
+                                <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
+                                <meta name="twitter:image" content="https://keywordmap.jp/academy/wp-content/uploads/2020/03/tmb10-min.png" />
+                                <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
+                                data-text="分析の結果、低音とハスキーと明瞭を読み取りました！あなたの声は【妖艶】、【エレガント】タイプです！#あなたの声は何タイプ"
+                                data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
+                                Tweet
+                                </a>
+                                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                            """
+                        )
                     else:
                         col4.write('この声は低音でハスキーで柔和です！「ジェントル」、「貫禄」を感じます！')
+                        components.html(
+                            """
+                                <meta name=”twitter:card” content=”summary_large_image” />
+                                <meta name=”twitter:site” content=”@deiko_cs” />
+                                <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
+                                <meta name=”twitter:title” content=”Voice Analysis” />
+                                <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
+                                <meta name="twitter:image" content="https://keywordmap.jp/academy/wp-content/uploads/2020/03/tmb10-min.png" />
+                                <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
+                                data-text="分析の結果、低音とハスキーと柔和を読み取りました！あなたの声は【貫禄】、【ジェントル】タイプです！#あなたの声は何タイプ"
+                                data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
+                                Tweet
+                                </a>
+                                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                            """
+                        )
 
-            components.html(
-                """
-                    <meta name=”twitter:card” content=”summary_large_image” />
-                    <meta name=”twitter:site” content=”@deiko_cs” />
-                    <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
-                    <meta name=”twitter:title” content=”Voice Analysis” />
-                    <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
-                """
-            )
 
             df = pd.DataFrame({"ファイル名": [uploaded_file.name],
                                "基本周波数（Hz）": [ave_fo],
