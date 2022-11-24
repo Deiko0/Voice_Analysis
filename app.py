@@ -28,15 +28,15 @@ st.set_page_config(
 
 config = dict(
     {'modeBarButtonsToRemove': [
-        'toImage',  # 画像ダウンロード
-        'zoom2d',  # ズームモード
-        'pan2d',  # 移動モード
-        'select2d',  # 四角形で選択
-        'lasso2d',  # ラッソで選択
-        'zoomIn2d',  # 拡大
-        'zoomOut2d',  # 縮小
-        'autoScale2d',  # 自動範囲設定
-        'resetScale2d',  # 元の縮尺
+        'toImage',
+        'zoom2d',
+        'pan2d',
+        'select2d',
+        'lasso2d',
+        'zoomIn2d',
+        'zoomOut2d',
+        'autoScale2d',
+        'resetScale2d',
     ],
         'displaylogo': False}
 )
@@ -50,10 +50,14 @@ def calc_fo(wav):
 
 @st.cache
 def measurePitch(wav):
-    sound = parselmouth.Sound(wav)
-    harmonicity = call(sound, "To Harmonicity (cc)", 0.01, 75, 0.1, 1.0)
-    hnr = call(harmonicity, "Get mean", 0, 0)
-    return hnr
+    if wav == []:
+        hnr = 0
+        return hnr
+    else:
+        sound = parselmouth.Sound(wav)
+        harmonicity = call(sound, "To Harmonicity (cc)", 0.01, 75, 0.1, 1.0)
+        hnr = call(harmonicity, "Get mean", 0, 0)
+        return hnr
 
 
 @st.cache
@@ -64,8 +68,21 @@ def calc_spectrum(wav, sr, fo):
 
     peaks = signal.argrelmax(s_power, order=80)[0]
     peaks = peaks[(peaks >= fo)]
-
     return s_power, freqs, peaks
+
+
+@st.cache
+def calc_odd_even(s_power, peaks):
+    odd = sum(s_power[peaks[1::2]])
+    even = sum(s_power[peaks[2::2]])
+    if odd + even == 0:
+        odd_per = 0
+        even_per = 0
+        return odd, even, odd_per, even_per
+    else:
+        odd_per = odd * 100 / (odd + even)
+        even_per = even * 100 / (odd + even)
+        return odd, even, odd_per, even_per
 
 
 @st.cache
@@ -111,9 +128,9 @@ def main():
     uploaded_file = st.sidebar.file_uploader('＊1秒以上のwav、モノラル音源')
 
     st.sidebar.title('使い方')
-    st.sidebar.write('1. 「Browse files」から音声ファイルを読み込む')
-    st.sidebar.write('2. 「設定」から分析範囲を指定する')
-    st.sidebar.write('3. グラフや表に分析結果が表示される')
+    st.sidebar.write('1.「Browse files」から音声ファイルを読み込む')
+    st.sidebar.write('2.「設定」から分析範囲を指定する')
+    st.sidebar.write('3.グラフや表に分析結果が表示される')
     st.sidebar.markdown("---")
 
     if uploaded_file is not None:
@@ -126,7 +143,8 @@ def main():
 
         st.sidebar.title('設定')
         tgt_ranges = st.sidebar.slider(
-            "分析範囲（秒）", 0, wav_seconds, (0, wav_seconds))
+            "分析範囲（秒）", 1, wav_seconds, (0, wav_seconds))
+        st.sidebar.markdown("---")
 
         col1, col2 = st.columns(2)
         fig = go.Figure()
@@ -170,137 +188,145 @@ def main():
                           plot_bgcolor="#b7c3d1"
                           )
         col2.plotly_chart(fig, use_container_width=True, **{'config': config})
-        odd = sum(s_power[peaks[1::2]])
-        even = sum(s_power[peaks[2::2]])
-        odd_per = odd * 100 / (odd + even)
-        even_per = even * 100 / (odd + even)
 
-        # hnr
-        hnr = measurePitch(wav_element)
+        # odd_even
+        odd, even, odd_per, even_per = calc_odd_even(s_power, peaks)
 
-        st.title("分析結果")
-
-        col3, col4 = st.columns(2)
-
-        clip_ave_fo = np.clip(ave_fo, 80, 250)
-        New_fo_Value = (((clip_ave_fo - 80) * 10) / 170) - 5
-        if New_fo_Value > 0:
-            fo_color = '#e3619f'
+        if tgt_ranges == (0, 0):
+            st.error('分析範囲が0秒です！設定から分析範囲を指定し直してください！', icon='😵')
+        elif odd_per + even_per == 0:
+            st.error('倍音が検出できません！設定から分析範囲を指定し直すか、別のファイルを読み込んでください！', icon='😵')
         else:
-            fo_color = '#2584c1'
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(y=[''], x=[New_fo_Value], marker=dict(
-            color=fo_color, size=20, symbol='diamond')),)
-        fig.add_annotation(text='低音', xref="paper", yref="paper",
-                           x=0, y=0.5, showarrow=False, bgcolor="#e5edef",
-                           opacity=0.8, font=dict(
-                               family="monospace",
-                               color="#20323e",
-                               size=16
-                           ))
-        fig.add_annotation(text='高音', xref="paper", yref="paper",
-                           x=1, y=0.5, showarrow=False, bgcolor="#e5edef",
-                           opacity=0.8, font=dict(
-                               family="monospace",
-                               color="#20323e",
-                               size=16
-                           ))
-        fig.update_yaxes(gridcolor='#e5edef')
-        fig.update_xaxes(dtick=1.25, showticklabels=False, gridcolor='#e5edef')
-        fig.update_layout(height=GRAPH_HEIGHT / 6, xaxis=dict(
-            range=[-5, 5]), showlegend=False, hovermode=False, margin=dict(t=0, b=0, l=10, r=10), plot_bgcolor="#b7c3d1")
-        col3.plotly_chart(fig, use_container_width=True, **{'config': config})
+            # hnr
+            hnr = measurePitch(wav_element)
 
-        clip_hnr = np.clip(hnr, 7, 17)
-        New_hnr_Value = (((clip_hnr - 7) * 10) / 10) - 5
-        if New_hnr_Value > 0:
-            hnr_color = '#e3619f'
-        else:
-            hnr_color = '#2584c1'
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(y=[''], x=[New_hnr_Value], marker=dict(
-            color=hnr_color, size=20, symbol='diamond')),)
-        fig.add_annotation(text='ハスキー', xref="paper", yref="paper",
-                           x=0, y=0.5, showarrow=False, bgcolor="#e5edef",
-                           opacity=0.8, font=dict(
-                               family="monospace",
-                               color="#20323e",
-                               size=16
-                           ))
-        fig.add_annotation(text='クリア', xref="paper", yref="paper",
-                           x=1, y=0.5, showarrow=False, bgcolor="#e5edef",
-                           opacity=0.8, font=dict(
-                               family="monospace",
-                               color="#20323e",
-                               size=16
-                           ))
-        fig.update_yaxes(gridcolor='#e5edef')
-        fig.update_xaxes(dtick=1.25, showticklabels=False, gridcolor='#e5edef')
-        fig.update_layout(height=GRAPH_HEIGHT / 6, xaxis=dict(
-            range=[-5, 5]), showlegend=False, hovermode=False, margin=dict(t=0, b=0, l=10, r=10), plot_bgcolor="#b7c3d1")
-        col3.plotly_chart(fig, use_container_width=True, **{'config': config})
+            st.title("分析結果")
+            col3, col4 = st.columns(2)
 
-        fig = go.Figure()
-        fig.add_trace(go.Funnel(y=[''], x=[even_per], textinfo='text', marker=dict(
-            color='#2584c1')))
-        fig.add_trace(go.Funnel(y=[''], x=[odd_per], textinfo='text', marker=dict(
-            color='#e3619f')))
-        fig.add_annotation(text='柔和', xref="paper", yref="paper",
-                           x=0, y=0.5, showarrow=False, bgcolor="#e5edef",
-                           opacity=0.8, font=dict(
-                               family="monospace",
-                               color="#20323e",
-                               size=16
-                           ))
-        fig.add_annotation(text='明瞭', xref="paper", yref="paper",
-                           x=1, y=0.5, showarrow=False, bgcolor="#e5edef",
-                           opacity=0.8, font=dict(
-                               family="monospace",
-                               color="#20323e",
-                               size=16
-                           ))
-        fig.update_layout(height=GRAPH_HEIGHT / 6, showlegend=False,
-                          hovermode=False, margin=dict(t=0, b=0, l=10, r=10), plot_bgcolor="#b7c3d1")
-        col3.plotly_chart(fig, use_container_width=True, **{'config': config})
-
-        if hnr > 12:
-            if ave_fo > 165:
-                if odd_per > even_per + 10:
-                    col4.write('この声は高音でクリアで明瞭です！¥n「エネルギー」、「元気」を感じます！')
-                else:
-                    col4.write('この声は高音でクリアで柔和です！「ピュア」、「透明感」を感じます！')
+            clip_ave_fo = np.clip(ave_fo, 80, 250)
+            New_fo_Value = (((clip_ave_fo - 80) * 10) / 170) - 5
+            if New_fo_Value > 0:
+                fo_color = '#e3619f'
             else:
-                if odd_per > even_per + 10:
-                    col4.write('この声は低音でクリアで明瞭です！「リーダー」、「勇敢」を感じます！')
-                else:
-                    col4.markdown('この声は低音でクリアで柔和です！「クール」、「信頼」を感じます！')
-        else:
-            if ave_fo > 165:
-                if odd_per > even_per + 10:
-                    col4.write('この声は高音でハスキーで明瞭です！「フレンドリー」、「愛嬌」を感じます！')
-                else:
-                    col4.write('この声は高音でハスキーで柔和です！「ソフト」、「甘い」を感じます！')
+                fo_color = '#2584c1'
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(y=[''], x=[New_fo_Value], marker=dict(
+                color=fo_color, size=20, symbol='diamond')),)
+            fig.add_annotation(text='低音', xref="paper", yref="paper",
+                               x=0, y=0.5, showarrow=False, bgcolor="#e5edef",
+                               opacity=0.8, font=dict(
+                                   family="monospace",
+                                   color="#20323e",
+                                   size=16
+                               ))
+            fig.add_annotation(text='高音', xref="paper", yref="paper",
+                               x=1, y=0.5, showarrow=False, bgcolor="#e5edef",
+                               opacity=0.8, font=dict(
+                                   family="monospace",
+                                   color="#20323e",
+                                   size=16
+                               ))
+            fig.update_yaxes(gridcolor='#e5edef')
+            fig.update_xaxes(dtick=1.25, showticklabels=False,
+                             gridcolor='#e5edef')
+            fig.update_layout(height=GRAPH_HEIGHT / 6, xaxis=dict(
+                range=[-5, 5]), showlegend=False, hovermode=False, margin=dict(t=0, b=0, l=10, r=10), plot_bgcolor="#b7c3d1")
+            col3.plotly_chart(fig, use_container_width=True,
+                              **{'config': config})
+
+            clip_hnr = np.clip(hnr, 7, 17)
+            New_hnr_Value = (((clip_hnr - 7) * 10) / 10) - 5
+            if New_hnr_Value > 0:
+                hnr_color = '#e3619f'
             else:
-                if odd_per > even_per + 10:
-                    col4.write('この声は低音でハスキーで明瞭です！「エレガント」、「妖艶」を感じます！')
+                hnr_color = '#2584c1'
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(y=[''], x=[New_hnr_Value], marker=dict(
+                color=hnr_color, size=20, symbol='diamond')),)
+            fig.add_annotation(text='ハスキー', xref="paper", yref="paper",
+                               x=0, y=0.5, showarrow=False, bgcolor="#e5edef",
+                               opacity=0.8, font=dict(
+                                   family="monospace",
+                                   color="#20323e",
+                                   size=16
+                               ))
+            fig.add_annotation(text='クリア', xref="paper", yref="paper",
+                               x=1, y=0.5, showarrow=False, bgcolor="#e5edef",
+                               opacity=0.8, font=dict(
+                                   family="monospace",
+                                   color="#20323e",
+                                   size=16
+                               ))
+            fig.update_yaxes(gridcolor='#e5edef')
+            fig.update_xaxes(dtick=1.25, showticklabels=False,
+                             gridcolor='#e5edef')
+            fig.update_layout(height=GRAPH_HEIGHT / 6, xaxis=dict(
+                range=[-5, 5]), showlegend=False, hovermode=False, margin=dict(t=0, b=0, l=10, r=10), plot_bgcolor="#b7c3d1")
+            col3.plotly_chart(fig, use_container_width=True,
+                              **{'config': config})
+
+            fig = go.Figure()
+            fig.add_trace(go.Funnel(y=[''], x=[even_per], textinfo='text', marker=dict(
+                color='#2584c1')))
+            fig.add_trace(go.Funnel(y=[''], x=[odd_per], textinfo='text', marker=dict(
+                color='#e3619f')))
+            fig.add_annotation(text='柔和', xref="paper", yref="paper",
+                               x=0, y=0.5, showarrow=False, bgcolor="#e5edef",
+                               opacity=0.8, font=dict(
+                                   family="monospace",
+                                   color="#20323e",
+                                   size=16
+                               ))
+            fig.add_annotation(text='明瞭', xref="paper", yref="paper",
+                               x=1, y=0.5, showarrow=False, bgcolor="#e5edef",
+                               opacity=0.8, font=dict(
+                                   family="monospace",
+                                   color="#20323e",
+                                   size=16
+                               ))
+            fig.update_layout(height=GRAPH_HEIGHT / 6, showlegend=False,
+                              hovermode=False, margin=dict(t=0, b=0, l=10, r=10), plot_bgcolor="#b7c3d1")
+            col3.plotly_chart(fig, use_container_width=True,
+                              **{'config': config})
+
+            if hnr > 12:
+                if ave_fo > 165:
+                    if odd_per > even_per + 10:
+                        col4.write('この声は高音でクリアで明瞭です！「エネルギー」、「元気」を感じます！')
+                    else:
+                        col4.write('この声は高音でクリアで柔和です！「ピュア」、「透明感」を感じます！')
                 else:
-                    col4.write('この声は低音でハスキーで柔和です！「ジェントル」、「貫禄」を感じます！')
+                    if odd_per > even_per + 10:
+                        col4.write('この声は低音でクリアで明瞭です！「リーダー」、「勇敢」を感じます！')
+                    else:
+                        col4.markdown('この声は低音でクリアで柔和です！「クール」、「信頼」を感じます！')
+            else:
+                if ave_fo > 165:
+                    if odd_per > even_per + 10:
+                        col4.write('この声は高音でハスキーで明瞭です！「フレンドリー」、「愛嬌」を感じます！')
+                    else:
+                        col4.write('この声は高音でハスキーで柔和です！「ソフト」、「甘い」を感じます！')
+                else:
+                    if odd_per > even_per + 10:
+                        col4.write('この声は低音でハスキーで明瞭です！「エレガント」、「妖艶」を感じます！')
+                    else:
+                        col4.write('この声は低音でハスキーで柔和です！「ジェントル」、「貫禄」を感じます！')
 
-        df = pd.DataFrame({"ファイル名": [uploaded_file.name],
-                           "基本周波数（Hz）": [ave_fo],
-                           "HNR（dB）": [hnr],
-                           "奇数倍音（％）": [odd_per],
-                           "偶数倍音（％）": [even_per]}
-                          )
-        st.dataframe(df)
+            df = pd.DataFrame({"ファイル名": [uploaded_file.name],
+                               "基本周波数（Hz）": [ave_fo],
+                               "HNR（dB）": [hnr],
+                               "奇数倍音（％）": [odd_per],
+                               "偶数倍音（％）": [even_per]}
+                              )
+            st.dataframe(df)
 
-        csv = df.to_csv(index=False)
-        b64 = base64.b64encode(csv.encode()).decode()
-        href = f'<a href="data:application/octet-stream;base64,{b64}" download="result.csv">download</a>'
-        st.markdown(
-            f'<span style="font-family:monospace;font-size:16px">csvファイルでダウンロード {href}</span>', unsafe_allow_html=True)
-        st.markdown(
-            f'<span style="font-family:monospace;font-size:16px">基本周波数とHNRは平均で計算しています。</span>', unsafe_allow_html=True)
+            csv = df.to_csv(index=False)
+            b64 = base64.b64encode(csv.encode()).decode()
+            href = f'<a href="data:application/octet-stream;base64,{b64}" download="result.csv">download</a>'
+            st.markdown(
+                f'<span style="font-family:monospace;font-size:16px">csvファイルでダウンロード {href}</span>', unsafe_allow_html=True)
+            st.markdown(
+                f'<span style="font-family:monospace;font-size:16px">基本周波数とHNRは平均で計算しています。</span>', unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
