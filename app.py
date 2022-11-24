@@ -18,8 +18,8 @@ st.set_page_config(
     page_title="Voice Analysis",
     initial_sidebar_state="expanded",
     menu_items={
-        'Get Help': 'https://www.google.com',
-        'Report a bug': "https://www.google.com",
+        'Get Help': 'https://twitter.com/deiko_cs',
+        'Report a bug': "https://twitter.com/deiko_cs",
         'About': """
          # 声の分析ツール
          このツールはアップロードした音声を分析して、グラフや声のタイプを表示します。
@@ -91,24 +91,25 @@ def _set_block_container_style(
 def main():
     st.title('Voice Analysis')
     st.write('create by Deiko')
-    st.write('-----------------------------------')
+    st.markdown("---")
     st.sidebar.title('Voice Analysis')
     uploaded_file = st.sidebar.file_uploader('＊1秒以上のwav、モノラル音源')
 
-    st.sidebar.subheader('使い方')
-    st.sidebar.write('1. ページ上の「Browse files」から音声ファイルを読み込む')
-    st.sidebar.write('2. ページ下の「設定」から分析範囲を指定する')
-    st.sidebar.write('3. 後ろのページにグラフや表に分析結果が表示される')
+    st.sidebar.title('使い方')
+    st.sidebar.write('1. 「Browse files」から音声ファイルを読み込む')
+    st.sidebar.write('2. 「設定」から分析範囲を指定する')
+    st.sidebar.write('3. グラフや表に分析結果が表示される')
+    st.sidebar.markdown("---")
 
     if uploaded_file is not None:
         wav, sr = librosa.load(uploaded_file, sr=None)
         wav = librosa.to_mono(wav)
         wav_seconds = int(len(wav) / sr)
 
-        st.write(uploaded_file.name)
+        st.write('ファイル名：' + uploaded_file.name)
         st.audio(uploaded_file)
 
-        st.sidebar.title('【設定】')
+        st.sidebar.title('設定')
         tgt_ranges = st.sidebar.slider(
             "分析範囲（秒）", 0, wav_seconds, (0, wav_seconds))
 
@@ -178,14 +179,14 @@ def main():
         fig.add_annotation(text='低音', xref="paper", yref="paper",
                            x=0, y=0.5, showarrow=False, bgcolor="#e5edef",
                            opacity=0.8, font=dict(
-                               family="serif",
+                               family="monospace",
                                color="#20323e",
                                size=16
                            ))
         fig.add_annotation(text='高音', xref="paper", yref="paper",
                            x=1, y=0.5, showarrow=False, bgcolor="#e5edef",
                            opacity=0.8, font=dict(
-                               family="serif",
+                               family="monospace",
                                color="#20323e",
                                size=16
                            ))
@@ -207,14 +208,14 @@ def main():
         fig.add_annotation(text='ハスキー', xref="paper", yref="paper",
                            x=0, y=0.5, showarrow=False, bgcolor="#e5edef",
                            opacity=0.8, font=dict(
-                               family="serif",
+                               family="monospace",
                                color="#20323e",
                                size=16
                            ))
         fig.add_annotation(text='クリア', xref="paper", yref="paper",
                            x=1, y=0.5, showarrow=False, bgcolor="#e5edef",
                            opacity=0.8, font=dict(
-                               family="serif",
+                               family="monospace",
                                color="#20323e",
                                size=16
                            ))
@@ -232,14 +233,14 @@ def main():
         fig.add_annotation(text='柔和', xref="paper", yref="paper",
                            x=0, y=0.5, showarrow=False, bgcolor="#e5edef",
                            opacity=0.8, font=dict(
-                               family="serif",
+                               family="monospace",
                                color="#20323e",
                                size=16
                            ))
         fig.add_annotation(text='明瞭', xref="paper", yref="paper",
                            x=1, y=0.5, showarrow=False, bgcolor="#e5edef",
                            opacity=0.8, font=dict(
-                               family="serif",
+                               family="monospace",
                                color="#20323e",
                                size=16
                            ))
@@ -250,25 +251,25 @@ def main():
         if hnr > 12:
             if ave_fo > 165:
                 if odd_per > even_per + 10:
-                    col4.write('この声は「エネルギー」、「元気」を感じます！')
+                    col4.write('この声は高音でクリアで明瞭です！¥n「エネルギー」、「元気」を感じます！')
                 else:
-                    col4.write('この声は「ピュア」、「透明感」を感じます！')
+                    col4.write('この声は高音でクリアで柔和です！「ピュア」、「透明感」を感じます！')
             else:
                 if odd_per > even_per + 10:
-                    col4.write('この声は「リーダー」、「勇敢」を感じます！')
+                    col4.write('この声は低音でクリアで明瞭です！「リーダー」、「勇敢」を感じます！')
                 else:
-                    col4.write('この声は「クール」、「信頼」を感じます！')
+                    col4.markdown('この声は低音でクリアで柔和です！「クール」、「信頼」を感じます！')
         else:
             if ave_fo > 165:
                 if odd_per > even_per + 10:
-                    col4.write('この声は「フレンドリー」、「愛嬌」を感じます！')
+                    col4.write('この声は高音でハスキーで明瞭です！「フレンドリー」、「愛嬌」を感じます！')
                 else:
-                    col4.write('この声は「ソフト」、「甘い」を感じます！')
+                    col4.write('この声は高音でハスキーで柔和です！「ソフト」、「甘い」を感じます！')
             else:
                 if odd_per > even_per + 10:
-                    col4.write('この声は「エレガント」、「妖艶」を感じます！')
+                    col4.write('この声は低音でハスキーで明瞭です！「エレガント」、「妖艶」を感じます！')
                 else:
-                    col4.write('この声は「ジェントル」、「貫禄」を感じます！')
+                    col4.write('この声は低音でハスキーで柔和です！「ジェントル」、「貫禄」を感じます！')
 
         df = pd.DataFrame({"ファイル名": [uploaded_file.name],
                            "基本周波数（Hz）": [ave_fo],
@@ -281,8 +282,10 @@ def main():
         csv = df.to_csv(index=False)
         b64 = base64.b64encode(csv.encode()).decode()
         href = f'<a href="data:application/octet-stream;base64,{b64}" download="result.csv">download</a>'
-        st.markdown(f"csvファイルでダウンロード {href}", unsafe_allow_html=True)
-        st.write('基本周波数とHNRは平均で計算しています。')
+        st.markdown(
+            f'<span style="font-family:monospace;font-size:16px">csvファイルでダウンロード {href}</span>', unsafe_allow_html=True)
+        st.markdown(
+            f'<span style="font-family:monospace;font-size:16px">基本周波数とHNRは平均で計算しています。</span>', unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
