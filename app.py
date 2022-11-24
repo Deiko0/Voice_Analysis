@@ -26,6 +26,21 @@ st.set_page_config(
          """
     })
 
+config = dict(
+    {'modeBarButtonsToRemove': [
+        'toImage',  # 画像ダウンロード
+        'zoom2d',  # ズームモード
+        'pan2d',  # 移動モード
+        'select2d',  # 四角形で選択
+        'lasso2d',  # ラッソで選択
+        'zoomIn2d',  # 拡大
+        'zoomOut2d',  # 縮小
+        'autoScale2d',  # 自動範囲設定
+        'resetScale2d',  # 元の縮尺
+    ],
+        'displaylogo': False}
+)
+
 
 @st.cache
 def calc_fo(wav):
@@ -128,7 +143,7 @@ def main():
                           margin=dict(t=50, b=0, l=10, r=10),
                           plot_bgcolor="#b7c3d1"
                           )
-        col1.plotly_chart(fig, use_container_width=True)
+        col1.plotly_chart(fig, use_container_width=True, **{'config': config})
 
         wav_element = wav[tgt_ranges[0] * sr:tgt_ranges[1] * sr]
 
@@ -154,7 +169,7 @@ def main():
                           margin=dict(t=50, b=0, l=10, r=10),
                           plot_bgcolor="#b7c3d1"
                           )
-        col2.plotly_chart(fig, use_container_width=True)
+        col2.plotly_chart(fig, use_container_width=True, **{'config': config})
         odd = sum(s_power[peaks[1::2]])
         even = sum(s_power[peaks[2::2]])
         odd_per = odd * 100 / (odd + even)
@@ -194,7 +209,7 @@ def main():
         fig.update_xaxes(dtick=1.25, showticklabels=False, gridcolor='#e5edef')
         fig.update_layout(height=GRAPH_HEIGHT / 6, xaxis=dict(
             range=[-5, 5]), showlegend=False, hovermode=False, margin=dict(t=0, b=0, l=10, r=10), plot_bgcolor="#b7c3d1")
-        col3.plotly_chart(fig, use_container_width=True)
+        col3.plotly_chart(fig, use_container_width=True, **{'config': config})
 
         clip_hnr = np.clip(hnr, 7, 17)
         New_hnr_Value = (((clip_hnr - 7) * 10) / 10) - 5
@@ -223,7 +238,7 @@ def main():
         fig.update_xaxes(dtick=1.25, showticklabels=False, gridcolor='#e5edef')
         fig.update_layout(height=GRAPH_HEIGHT / 6, xaxis=dict(
             range=[-5, 5]), showlegend=False, hovermode=False, margin=dict(t=0, b=0, l=10, r=10), plot_bgcolor="#b7c3d1")
-        col3.plotly_chart(fig, use_container_width=True)
+        col3.plotly_chart(fig, use_container_width=True, **{'config': config})
 
         fig = go.Figure()
         fig.add_trace(go.Funnel(y=[''], x=[even_per], textinfo='text', marker=dict(
@@ -246,7 +261,7 @@ def main():
                            ))
         fig.update_layout(height=GRAPH_HEIGHT / 6, showlegend=False,
                           hovermode=False, margin=dict(t=0, b=0, l=10, r=10), plot_bgcolor="#b7c3d1")
-        col3.plotly_chart(fig, use_container_width=True)
+        col3.plotly_chart(fig, use_container_width=True, **{'config': config})
 
         if hnr > 12:
             if ave_fo > 165:
