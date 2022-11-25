@@ -69,6 +69,15 @@ def calc_spectrum(wav, sr, fo):
 
 
 @st.cache
+def calc_color(value):
+    if value > 0:
+        color = '#e3619f'
+    else:
+        color = '#2584c1'
+    return color
+
+
+@st.cache
 def calc_odd_even(s_power, peaks):
     odd = sum(s_power[peaks[1::2]])
     even = sum(s_power[peaks[2::2]])
@@ -80,6 +89,25 @@ def calc_odd_even(s_power, peaks):
         odd_per = odd * 100 / (odd + even)
         even_per = even * 100 / (odd + even)
         return odd, even, odd_per, even_per
+
+
+@st.cache
+def calc_type(type):
+    twitter_type = """
+        <meta name=”twitter:card” content=”summary_large_image” />
+        <meta name=”twitter:site” content=”@deiko_cs” />
+        <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
+        <meta name=”twitter:title” content=”Voice Analysis” />
+        <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
+        <meta name="twitter:image" content="" />
+        <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
+        data-text=分析の結果、""" + type + """#あなたの声は何タイプ、#VoiceAnalysis
+        data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
+        Tweet
+        </a>
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        """
+    return twitter_type
 
 
 @st.cache
@@ -202,10 +230,7 @@ def main():
 
             clip_ave_fo = np.clip(ave_fo, 80, 250)
             New_fo_Value = (((clip_ave_fo - 80) * 10) / 170) - 5
-            if New_fo_Value > 0:
-                fo_color = '#e3619f'
-            else:
-                fo_color = '#2584c1'
+            fo_color = calc_color(New_fo_Value)
             fig = go.Figure()
             fig.add_trace(go.Scatter(y=[''], x=[New_fo_Value], marker=dict(
                 color=fo_color, size=20, symbol='diamond')),)
@@ -233,10 +258,7 @@ def main():
 
             clip_hnr = np.clip(hnr, 7, 17)
             New_hnr_Value = (((clip_hnr - 7) * 10) / 10) - 5
-            if New_hnr_Value > 0:
-                hnr_color = '#e3619f'
-            else:
-                hnr_color = '#2584c1'
+            hnr_color = calc_color(New_hnr_Value)
             fig = go.Figure()
             fig.add_trace(go.Scatter(y=[''], x=[New_hnr_Value], marker=dict(
                 color=hnr_color, size=20, symbol='diamond')),)
@@ -289,158 +311,49 @@ def main():
             if hnr > 12:
                 if ave_fo > 165:
                     if odd_per > even_per + 10:
-                        col4.write(
-                            '高音とクリアと明瞭を読み取りました！あなたの声は【元気】、【エネルギー】タイプです！')
-                        components.html(
-                            """
-                                <meta name=”twitter:card” content=”summary_large_image” />
-                                <meta name=”twitter:site” content=”@deiko_cs” />
-                                <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
-                                <meta name=”twitter:title” content=”Voice Analysis” />
-                                <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
-                                <meta name="twitter:image" content="" />
-                                <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
-                                data-text="分析の結果、高音とクリアと明瞭を読み取りました！あなたの声は【元気】、【エネルギー】タイプです！#あなたの声は何タイプ"
-                                data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
-                                Tweet
-                                </a>
-                                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-                            """
-                        )
+                        type = '高音とクリアと明瞭を読み取りました！あなたの声は【元気】、【エネルギー】タイプです！'
+                        twitter_type = calc_type(type)
+                        col4.write(type)
+                        components.html(twitter_type)
                     else:
-                        col4.write('高音とクリアと柔和を読み取りました！あなたの声は【透明】、【ピュア】タイプです！')
-                        components.html(
-                            """
-                                <meta name=”twitter:card” content=”summary_large_image” />
-                                <meta name=”twitter:site” content=”@deiko_cs” />
-                                <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
-                                <meta name=”twitter:title” content=”Voice Analysis” />
-                                <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
-                                <meta name="twitter:image" content="" />
-                                <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
-                                data-text="分析の結果、高音とクリアと柔和を読み取りました！あなたの声は【透明】、【ピュア】タイプです！#あなたの声は何タイプ"
-                                data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
-                                Tweet
-                                </a>
-                                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-                            """
-                        )
+                        type = '高音とクリアと柔和を読み取りました！あなたの声は【透明】、【ピュア】タイプです！'
+                        twitter_type = calc_type(type)
+                        col4.write(type)
+                        components.html(twitter_type)
                 else:
                     if odd_per > even_per + 10:
-                        col4.write('低音とクリアと明瞭を読み取りました！あなたの声は【勇敢】、【リーダー】タイプです！')
-                        components.html(
-                            """
-                                <meta name=”twitter:card” content=”summary_large_image” />
-                                <meta name=”twitter:site” content=”@deiko_cs” />
-                                <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
-                                <meta name=”twitter:title” content=”Voice Analysis” />
-                                <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
-                                <meta name="twitter:image" content="" />
-                                <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
-                                data-text="分析の結果、低音とクリアと明瞭を読み取りました！あなたの声は【勇敢】、【リーダー】タイプです！#あなたの声は何タイプ"
-                                data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
-                                Tweet
-                                </a>
-                                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-                            """
-                        )
+                        type = '低音とクリアと明瞭を読み取りました！あなたの声は【勇敢】、【リーダー】タイプです！'
+                        twitter_type = calc_type(type)
+                        col4.write(type)
+                        components.html(twitter_type)
                     else:
-                        col4.markdown(
-                            '低音とクリアと柔和を読み取りました！あなたの声は【信頼】、【クール】タイプです！')
-                        components.html(
-                            """
-                                <meta name=”twitter:card” content=”summary_large_image” />
-                                <meta name=”twitter:site” content=”@deiko_cs” />
-                                <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
-                                <meta name=”twitter:title” content=”Voice Analysis” />
-                                <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
-                                <meta name="twitter:image" content="" />
-                                <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
-                                data-text="分析の結果、低音とクリアと柔和を読み取りました！あなたの声は【信頼】、【クール】タイプです！#あなたの声は何タイプ"
-                                data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
-                                Tweet
-                                </a>
-                                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-                            """
-                        )
+                        type = '低音とクリアと柔和を読み取りました！あなたの声は【信頼】、【クール】タイプです！'
+                        twitter_type = calc_type(type)
+                        col4.write(type)
+                        components.html(twitter_type)
             else:
                 if ave_fo > 165:
                     if odd_per > even_per + 10:
-                        col4.write(
-                            '高音とハスキーと明瞭を読み取りました！あなたの声は【愛嬌】、【フレンドリー】タイプです！')
-                        components.html(
-                            """
-                                <meta name=”twitter:card” content=”summary_large_image” />
-                                <meta name=”twitter:site” content=”@deiko_cs” />
-                                <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
-                                <meta name=”twitter:title” content=”Voice Analysis” />
-                                <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
-                                <meta name="twitter:image" content="" />
-                                <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
-                                data-text="分析の結果、高音とハスキーと明瞭を読み取りました！あなたの声は【愛嬌】、【フレンドリー】タイプです！#あなたの声は何タイプ"
-                                data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
-                                Tweet
-                                </a>
-                                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-                            """
-                        )
+                        type = '高音とハスキーと明瞭を読み取りました！あなたの声は【愛嬌】、【フレンドリー】タイプです！'
+                        twitter_type = calc_type(type)
+                        col4.write(type)
+                        components.html(twitter_type)
                     else:
-                        col4.write('高音とハスキーと柔和を読み取りました！あなたの声は【甘い】、【ソフト】タイプです！')
-                        components.html(
-                            """
-                                <meta name=”twitter:card” content=”summary_large_image” />
-                                <meta name=”twitter:site” content=”@deiko_cs” />
-                                <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
-                                <meta name=”twitter:title” content=”Voice Analysis” />
-                                <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
-                                <meta name="twitter:image" content="" />
-                                <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
-                                data-text="分析の結果、高音とハスキーと柔和を読み取りました！あなたの声は【甘い】、【ソフト】タイプです！#あなたの声は何タイプ"
-                                data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
-                                Tweet
-                                </a>
-                                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-                            """
-                        )
+                        type = '高音とハスキーと柔和を読み取りました！あなたの声は【甘い】、【ソフト】タイプです！'
+                        twitter_type = calc_type(type)
+                        col4.write(type)
+                        components.html(twitter_type)
                 else:
                     if odd_per > even_per + 10:
-                        col4.write(
-                            '低音とハスキーと明瞭を読み取りました！あなたの声は【妖艶】、【エレガント】タイプです！')
-                        components.html(
-                            """
-                                <meta name=”twitter:card” content=”summary_large_image” />
-                                <meta name=”twitter:site” content=”@deiko_cs” />
-                                <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
-                                <meta name=”twitter:title” content=”Voice Analysis” />
-                                <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
-                                <meta name="twitter:image" content="" />
-                                <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
-                                data-text="分析の結果、低音とハスキーと明瞭を読み取りました！あなたの声は【妖艶】、【エレガント】タイプです！#あなたの声は何タイプ"
-                                data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
-                                Tweet
-                                </a>
-                                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-                            """
-                        )
+                        type = '低音とハスキーと明瞭を読み取りました！あなたの声は【妖艶】、【エレガント】タイプです！'
+                        twitter_type = calc_type(type)
+                        col4.write(type)
+                        components.html(twitter_type)
                     else:
-                        col4.write(
-                            '低音とハスキーと柔和を読み取りました！あなたの声は【貫禄】、【ジェントル】タイプです！')
-                        components.html(
-                            """
-                                <meta name=”twitter:card” content=”summary_large_image” />
-                                <meta name=”twitter:site” content=”@deiko_cs” />
-                                <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
-                                <meta name=”twitter:title” content=”Voice Analysis” />
-                                <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
-                                <meta name="twitter:image" content="" />
-                                <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
-                                data-text="分析の結果、低音とハスキーと柔和を読み取りました！あなたの声は【貫禄】、【ジェントル】タイプです！#あなたの声は何タイプ"
-                                data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
-                                Tweet
-                                </a>
-                                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-                            """
-                        )
+                        type = '低音とハスキーと柔和を読み取りました！あなたの声は【貫禄】、【ジェントル】タイプです！'
+                        twitter_type = calc_type(type)
+                        col4.write(type)
+                        components.html(twitter_type)
 
             df = pd.DataFrame({"ファイル名": [uploaded_file.name],
                                "基本周波数（Hz）": [ave_fo],
