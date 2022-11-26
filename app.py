@@ -19,7 +19,7 @@ GRAPH_HEIGHT = 300
 
 st.set_page_config(
     page_title="Voice Analysis",
-    page_icon="🎙"
+    page_icon="🎙",
     initial_sidebar_state="expanded",
     menu_items={
         'Get Help': 'https://twitter.com/deiko_cs',
