@@ -11,6 +11,7 @@ import pandas as pd
 import base64
 import parselmouth
 from parselmouth.praat import call
+from PIL import Image
 
 HOP = 1000
 GRAPH_WIDTH = 1200
@@ -187,14 +188,15 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
 
 
 @st.cache
-def calc_type(type):
+def calc_type(type,img_path):
+    image = Image.open('images/'+img_path)
     twitter_type = """
         <meta name=”twitter:card” content=”summary_large_image” />
         <meta name=”twitter:site” content=”@deiko_cs” />
         <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
         <meta name=”twitter:title” content=”Voice Analysis” />
         <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
-        <meta name="twitter:image" content="" />
+        <meta name="twitter:image" content="images/"""+img_path+""" />
         <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
         data-text=分析の結果、""" + type + """#あなたの声は何タイプ、#VoiceAnalysis
         data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
@@ -202,7 +204,7 @@ def calc_type(type):
         </a>
         <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
         """
-    return twitter_type
+    return twitter_type,image
 
 
 def _set_block_container_style(
@@ -289,8 +291,9 @@ def main():
                 if ave_fo > 165:
                     if odd_per > even_per + 10:
                         type = '高音とクリアと明瞭を読み取りました！あなたの声は【元気】、【エネルギー】タイプです！'
-                        twitter_type = calc_type(type)
-                        col6.write(type)
+                        img_path = 'energy.png'
+                        twitter_type,image = calc_type(type,img_path)
+                        col6.image(image)
                         components.html(twitter_type)
                     else:
                         type = '高音とクリアと柔和を読み取りました！あなたの声は【透明】、【ピュア】タイプです！'
