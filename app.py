@@ -205,7 +205,7 @@ def main():
     st.title('Voice Analysis')
     st.write('create by Deiko')
     st.markdown("---")
-    st.subheader('使い方')
+    st.subheader('How to use')
     col1, col2 = st.columns(2)
     uploaded_file = col2.file_uploader('＊1秒以上のwav、モノラル音源')
 
