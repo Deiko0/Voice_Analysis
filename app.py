@@ -200,8 +200,8 @@ def calc_type(type, img_path):
         <meta name="twitter:image" content="https://github.com/Deiko0/Voice_Analysis/blob/main/images/""" + img_path + """" />
         <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
         data-text="分析の結果、""" + type + """"
-        data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
         data-hashtags="あなたの声は何タイプ,VoiceAnalysis"
+        data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
         Tweet
         </a>
         <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
