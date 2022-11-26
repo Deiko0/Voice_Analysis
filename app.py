@@ -11,7 +11,6 @@ import pandas as pd
 import base64
 import parselmouth
 from parselmouth.praat import call
-import cv2
 
 HOP = 1000
 GRAPH_WIDTH = 1200
