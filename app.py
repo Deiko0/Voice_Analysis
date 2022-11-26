@@ -30,12 +30,6 @@ st.set_page_config(
          """
     })
 
-components.html("""<meta name=”twitter:card” content=”summary_large_image” />
-                   <meta name=”twitter:site” content=”@deiko_cs” />
-                   <meta name=”twitter:title” content=”Voice Analysis” />
-                   <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
-                   <meta name="twitter:image" content="https://github.com/Deiko0/Voice_Analysis/blob/main/images/energy.png" />""")
-
 
 @st.cache
 def measurePitch(wav):
@@ -198,7 +192,7 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
 def calc_type(type, img_path):
     image = Image.open('images/' + img_path)
     twitter_type = """
-        <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
+        <a href="https://github.com/Deiko0/Voice_Analysis/blob/main/images/energy.png" class="twitter-share-button"
         data-text="分析の結果、""" + type + """"
         data-hashtags="あなたの声は何タイプ,VoiceAnalysis"
         data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
