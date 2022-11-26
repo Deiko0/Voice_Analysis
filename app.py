@@ -225,11 +225,10 @@ def main():
         wav = librosa.to_mono(wav)
         wav_seconds = int(len(wav) / sr)
 
-        st.audio(uploaded_file)
+        col2.audio(uploaded_file)
 
-        tgt_ranges = st.slider(
+        tgt_ranges = col2.slider(
             "分析範囲（秒）", 0, wav_seconds, (0, wav_seconds))
-        st.markdown("---")
 
         wav_element = wav[tgt_ranges[0] * sr:tgt_ranges[1] * sr]
 
