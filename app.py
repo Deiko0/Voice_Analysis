@@ -85,9 +85,9 @@ def draw_wave(wav, tgt_ranges, sr, wav_seconds):
         y=wav[::HOP], mode='lines', line=dict(color="#2584c1")))
     fig.add_vrect(x0=int(tgt_ranges[0] * sr / HOP), x1=int(tgt_ranges[1] * sr / HOP),
                   fillcolor="#d89648", opacity=0.5, layer="below", line_width=0)
-    fig.update_layout(title="【Waveform】", height=GRAPH_HEIGHT,
+    fig.update_layout(title="Waveform", height=GRAPH_HEIGHT,
                       xaxis=dict(tickmode='array', tickvals=[1, int(len(wav[::HOP]) / 2), len(wav[::HOP])], ticktext=[
-                                 str(0), str(int(wav_seconds / 2)), str(wav_seconds)], title="Time（s）", gridcolor='#e5edef', color="#20323e"),
+                                 str(0), str(int(wav_seconds / 2)), str(wav_seconds)], title="Time(s)", gridcolor='#e5edef', color="#20323e"),
                       yaxis=dict(gridcolor='#e5edef',
                                  color="#20323e", showticklabels=False),
                       margin=dict(t=50, b=0, l=10, r=10),
@@ -108,8 +108,8 @@ def draw_spectrum(freqs, s_power, peaks):
     fig.add_trace(go.Scatter(
         x=freqs[peaks[0:7]], y=s_power[peaks[0:7]], mode='markers', marker=dict(
             color='#e3619f',size=10)))
-    fig.update_layout(title="【Frequency Spectrum】", height=GRAPH_HEIGHT,
-                      xaxis=dict(title="Frequency（Hz）",
+    fig.update_layout(title="Frequency Spectrum", height=GRAPH_HEIGHT,
+                      xaxis=dict(title="Frequency(Hz)",
                                  range=[0, 2000], gridcolor='#e5edef', color="#20323e"),
                       yaxis=dict(gridcolor='#e5edef',
                                  color="#20323e", showticklabels=False),
