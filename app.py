@@ -77,6 +77,7 @@ def draw_wave(wav, tgt_ranges, sr, wav_seconds):
                                  color="#20323e", showticklabels=False),
                       margin=dict(t=50, b=0, l=10, r=10),
                       plot_bgcolor="#b7c3d1",
+                      paper_bgcolor="#b7c3d1",
                       font=dict(
                           color="#20323e",
                           size=20)
@@ -101,6 +102,7 @@ def draw_spectrum(freqs, s_power, peaks):
                       showlegend=False,
                       margin=dict(t=50, b=0, l=10, r=10),
                       plot_bgcolor="#b7c3d1",
+                      paper_bgcolor="#b7c3d1",
                       font=dict(
                           color="#20323e",
                           size=20)
@@ -177,7 +179,7 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
     fig.update_xaxes(dtick=1.25, showticklabels=False,
                      gridcolor='#e5edef')
     fig.update_layout(xaxis=dict(range=[-5, 5]), xaxis2=dict(range=[-5, 5]), showlegend=False, margin=dict(
-        t=0, b=0, l=10, r=10), plot_bgcolor="#b7c3d1")
+        t=0, b=0, l=10, r=10), plot_bgcolor="#b7c3d1",paper_bgcolor="#b7c3d1",)
 
     img = fig.to_image(format='png', width=600, height=350)
 
