@@ -28,21 +28,6 @@ st.set_page_config(
          """
     })
 
-config = dict(
-    {'modeBarButtonsToRemove': [
-        'toImage',
-        'zoom2d',
-        'pan2d',
-        'select2d',
-        'lasso2d',
-        'zoomIn2d',
-        'zoomOut2d',
-        'autoScale2d',
-        'resetScale2d',
-    ],
-        'displaylogo': False}
-)
-
 
 @st.cache
 def measurePitch(wav):
