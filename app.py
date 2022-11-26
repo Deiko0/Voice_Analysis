@@ -94,7 +94,7 @@ def draw_spectrum(freqs, s_power, peaks):
                   mode='lines', line=dict(color="#2584c1")))
     fig.add_trace(go.Scatter(
         x=freqs[peaks[0:7]], y=s_power[peaks[0:7]], mode='markers', marker=dict(
-            color='#e3619f',size=10)))
+            color='#e3619f', size=10)))
     fig.update_layout(title="Frequency Spectrum", height=GRAPH_HEIGHT,
                       xaxis=dict(title="Frequency(Hz)",
                                  range=[0, 2000], gridcolor='#e5edef', color="#20323e"),
@@ -180,7 +180,7 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
     fig.update_xaxes(dtick=1.25, showticklabels=False,
                      gridcolor='#e5edef')
     fig.update_layout(xaxis=dict(range=[-5, 5]), xaxis2=dict(range=[-5, 5]), showlegend=False, margin=dict(
-        t=0, b=0, l=10, r=10), plot_bgcolor="#b7c3d1",paper_bgcolor="#e5edef")
+        t=0, b=0, l=10, r=10), plot_bgcolor="#b7c3d1", paper_bgcolor="#e5edef")
 
     img = fig.to_image(format='png', width=600, height=350)
 
@@ -188,15 +188,15 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
 
 
 @st.cache
-def calc_type(type,img_path):
-    image = Image.open('images/'+img_path)
+def calc_type(type, img_path):
+    image = Image.open('images/' + img_path)
     twitter_type = """
         <meta name=”twitter:card” content=”summary_large_image” />
         <meta name=”twitter:site” content=”@deiko_cs” />
         <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
         <meta name=”twitter:title” content=”Voice Analysis” />
         <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
-        <meta name="twitter:image" content="images/"""+img_path+""" />
+        <meta name="twitter:image" content="images/""" + img_path + """" />
         <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
         data-text=分析の結果、""" + type + """#あなたの声は何タイプ、#VoiceAnalysis
         data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
@@ -204,7 +204,7 @@ def calc_type(type,img_path):
         </a>
         <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
         """
-    return twitter_type,image
+    return twitter_type, image
 
 
 def _set_block_container_style(
@@ -292,7 +292,7 @@ def main():
                     if odd_per > even_per + 10:
                         type = '高音とクリアと明瞭を読み取りました！あなたの声は【元気】、【エネルギー】タイプです！'
                         img_path = 'energy.png'
-                        twitter_type,image = calc_type(type,img_path)
+                        twitter_type, image = calc_type(type, img_path)
                         col6.image(image)
                         components.html(twitter_type)
                     else:
