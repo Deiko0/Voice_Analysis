@@ -94,14 +94,12 @@ def draw_spec(ave_fo, hnr, even_per, odd_per):
     fig.add_annotation(text='低音', xref="paper", yref="paper",
                        x=0, y=0.86, showarrow=False, bgcolor="#e5edef",
                        opacity=0.8, font=dict(
-                           family="monospace",
                            color="#20323e",
                            size=30
                        ))
     fig.add_annotation(text='高音', xref="paper", yref="paper",
                        x=1, y=0.86, showarrow=False, bgcolor="#e5edef",
                        opacity=0.8, font=dict(
-                           family="monospace",
                            color="#20323e",
                            size=30
                        ))
@@ -118,14 +116,12 @@ def draw_spec(ave_fo, hnr, even_per, odd_per):
     fig.add_annotation(text='ハスキー', xref="paper", yref="paper",
                        x=0, y=0.43, showarrow=False, bgcolor="#e5edef",
                        opacity=0.8, font=dict(
-                            family="monospace",
                             color="#20323e",
                             size=30
                        ))
     fig.add_annotation(text='クリア', xref="paper", yref="paper",
                        x=1, y=0.43, showarrow=False, bgcolor="#e5edef",
                        opacity=0.8, font=dict(
-                            family="monospace",
                             color="#20323e",
                             size=30
                        ))
@@ -137,14 +133,12 @@ def draw_spec(ave_fo, hnr, even_per, odd_per):
     fig.add_annotation(text='柔和', xref="paper", yref="paper",
                        x=0, y=0, showarrow=False, bgcolor="#e5edef",
                        opacity=0.8, font=dict(
-                            family="monospace",
                             color="#20323e",
                             size=30
                        ))
     fig.add_annotation(text='明瞭', xref="paper", yref="paper",
                        x=1, y=0, showarrow=False, bgcolor="#e5edef",
                        opacity=0.8, font=dict(
-                            family="monospace",
                             color="#20323e",
                             size=30
                        ))
