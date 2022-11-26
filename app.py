@@ -79,7 +79,53 @@ def calc_spec(wav, sr):
 
 
 @st.cache
-def draw_spec(ave_fo, hnr, even_per, odd_per):
+def draw_wave(wav, tgt_ranges, sr, wav_seconds):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        y=wav[::HOP], mode='lines', line=dict(color="#2584c1")))
+    fig.add_vrect(x0=int(tgt_ranges[0] * sr / HOP), x1=int(tgt_ranges[1] * sr / HOP),
+                  fillcolor="#d89648", opacity=0.5, layer="below", line_width=0)
+    fig.update_layout(title="【Waveform】", height=GRAPH_HEIGHT,
+                      xaxis=dict(tickmode='array', tickvals=[1, int(len(wav[::HOP]) / 2), len(wav[::HOP])], ticktext=[
+                                 str(0), str(int(wav_seconds / 2)), str(wav_seconds)], title="Time（s）", gridcolor='#e5edef', color="#20323e"),
+                      yaxis=dict(gridcolor='#e5edef',
+                                 color="#20323e", showticklabels=False),
+                      margin=dict(t=50, b=0, l=10, r=10),
+                      plot_bgcolor="#b7c3d1",
+                      font=dict(
+                          color="#20323e",
+                          size=20)
+                      )
+    img = fig.to_image(format='png', width=600, height=525)
+    return img
+
+
+@st.cache
+def draw_spectrum(freqs, s_power, peaks):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=freqs, y=s_power,
+                  mode='lines', line=dict(color="#2584c1")))
+    fig.add_trace(go.Scatter(
+        x=freqs[peaks[0:7]], y=s_power[peaks[0:7]], mode='markers', marker=dict(
+            color='#e3619f',size=10)))
+    fig.update_layout(title="【Frequency Spectrum】", height=GRAPH_HEIGHT,
+                      xaxis=dict(title="Frequency（Hz）",
+                                 range=[0, 2000], gridcolor='#e5edef', color="#20323e"),
+                      yaxis=dict(gridcolor='#e5edef',
+                                 color="#20323e", showticklabels=False),
+                      showlegend=False,
+                      margin=dict(t=50, b=0, l=10, r=10),
+                      plot_bgcolor="#b7c3d1",
+                      font=dict(
+                          color="#20323e",
+                          size=20)
+                      )
+    img = fig.to_image(format='png', width=600, height=525)
+    return img
+
+
+@st.cache
+def draw_result(ave_fo, hnr, even_per, odd_per):
     fig = make_subplots(rows=3, cols=1)
 
     clip_ave_fo = np.clip(ave_fo, 80, 250)
@@ -232,37 +278,11 @@ def main():
 
         col3, col4 = st.columns(2)
 
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            y=wav[::HOP], mode='lines', line=dict(color="#2584c1")))
-        fig.add_vrect(x0=int(tgt_ranges[0] * sr / HOP), x1=int(tgt_ranges[1] * sr / HOP),
-                      fillcolor="#d89648", opacity=0.5, layer="below", line_width=0)
-        fig.update_layout(title="【音声波形】", height=GRAPH_HEIGHT,
-                          xaxis=dict(tickmode='array', tickvals=[1, int(len(wav[::HOP]) / 2), len(wav[::HOP])], ticktext=[
-                                     str(0), str(int(wav_seconds / 2)), str(wav_seconds)], title="時間（秒）", gridcolor='#e5edef', color="#20323e"),
-                          yaxis=dict(gridcolor='#e5edef',
-                                     color="#20323e", showticklabels=False),
-                          margin=dict(t=50, b=0, l=10, r=10),
-                          plot_bgcolor="#b7c3d1"
-                          )
-        col3.plotly_chart(fig, use_container_width=True, **{'config': config})
+        wave_img = draw_wave(wav, tgt_ranges, sr, wav_seconds)
+        col3.image(wave_img)
 
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=freqs, y=s_power,
-                      mode='lines', line=dict(color="#2584c1")))
-        fig.add_trace(go.Scatter(
-            x=freqs[peaks[0:7]], y=s_power[peaks[0:7]], mode='markers', marker=dict(
-                color='#e3619f')))
-        fig.update_layout(title="【周波数スペクトル】", height=GRAPH_HEIGHT,
-                          xaxis=dict(title="周波数（Hz）",
-                                     range=[0, 2000], gridcolor='#e5edef', color="#20323e"),
-                          yaxis=dict(gridcolor='#e5edef',
-                                     color="#20323e", showticklabels=False),
-                          showlegend=False,
-                          margin=dict(t=50, b=0, l=10, r=10),
-                          plot_bgcolor="#b7c3d1"
-                          )
-        col4.plotly_chart(fig, use_container_width=True, **{'config': config})
+        spectrum_img = draw_spectrum(freqs, s_power, peaks)
+        col4.image(spectrum_img)
 
         if tgt_ranges == (0, 0):
             st.error('分析範囲が0秒です！設定から分析範囲を指定し直してください！', icon='😵')
@@ -272,11 +292,11 @@ def main():
             # hnr
             hnr = measurePitch(wav_element)
 
-            st.title("分析結果")
+            st.header("Result")
             col5, col6 = st.columns(2)
 
-            img = draw_spec(ave_fo, hnr, even_per, odd_per)
-            col5.image(img)
+            result_img = draw_result(ave_fo, hnr, even_per, odd_per)
+            col5.image(result_img)
 
             if hnr > 12:
                 if ave_fo > 165:
