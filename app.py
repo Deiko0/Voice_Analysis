@@ -194,9 +194,9 @@ def calc_type(type, img_path):
         <meta name=”twitter:card” content=”summary_large_image” />
         <meta name=”twitter:site” content=”@deiko_cs” />
         <meta name=”twitter:domain” content=”deiko0-voice-analysis-app-m0fgp5.streamlit.app” />
-        <meta name=”twitter:title” content=”Voice Analysis” />
-        <meta name=”twitter:description” content=”声を分析するWebツール[…]” />
-        <meta name="twitter:image" content="https://github.com/Deiko0/Voice_Analysis/blob/main/images/energy.png" />
+        <meta property="og:title" content= content=”Voice Analysis” />
+        <meta property="og:description" content=”声を分析するWebツール[…]” />
+        <meta property="og:image" content="https://github.com/Deiko0/Voice_Analysis/blob/main/images/energy.png" />
         <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
         data-text=分析の結果、""" + type + """#あなたの声は何タイプ、#VoiceAnalysis
         data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
