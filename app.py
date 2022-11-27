@@ -192,11 +192,8 @@ def calc_type(type, img_path):
     image = Image.open(img_path)
     twitter_type = """
         <a href="http://twitter.com/intent/tweet" class="twitter-share-button"
-        data-text="分析の結果、""" + type + """"
+        data-text="分析の結果、""" + type + """ #あなたの声は何タイプ #VoiceAnalysis"
         data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
-        data-show-count="false">
-        data-size="Large"
-        data-hashtags="あなたの声は何タイプ,VoiceAnalysis"
         Tweet
         </a>
         <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
