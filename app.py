@@ -20,7 +20,6 @@ GRAPH_HEIGHT = 300
 st.set_page_config(
     page_title="Voice Analysis",
     page_icon="🎙",
-    initial_sidebar_state="expanded",
     menu_items={
         'Get Help': 'https://twitter.com/deiko_cs',
         'Report a bug': "https://twitter.com/deiko_cs",
@@ -190,13 +189,9 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
 
 @st.cache
 def calc_type(type, img_path):
-    image = Image.open('images/' + img_path)
+    image = Image.open(img_path)
     twitter_type = """
-        <a href="https://twitter.com/intent/tweet" class="twitter-share-button"
-        data-text="分析の結果、""" + type + """"
-        data-hashtags="あなたの声は何タイプ,VoiceAnalysis"
-        data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
-        Tweet
+        <a class="twitter-share-button" href="http://twitter.com/intent/tweet?text=テスト https://twitter.com/deiko_cs/status/1596342905261940736/photo/1&hashtags=Voice">
         </a>
         <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
         """
@@ -287,55 +282,55 @@ def main():
                 if ave_fo > 165:
                     if odd_per > even_per + 10:
                         type = '高音とクリアと明瞭を読み取りました！あなたの声は【元気】、【エネルギー】タイプです！'
-                        img_path = 'energy.png'
+                        img_path = 'images/energy.png'
                         twitter_type, image = calc_type(type, img_path)
                         col6.image(image)
                         components.html(twitter_type)
                     else:
                         type = '高音とクリアと柔和を読み取りました！あなたの声は【透明】、【ピュア】タイプです！'
-                        img_path = 'energy.png'
+                        img_path = 'images/pure.png'
                         twitter_type, image = calc_type(type, img_path)
-                        col6.write(type)
+                        col6.image(image)
                         components.html(twitter_type)
                 else:
                     if odd_per > even_per + 10:
                         type = '低音とクリアと明瞭を読み取りました！あなたの声は【勇敢】、【リーダー】タイプです！'
-                        img_path = 'energy.png'
+                        img_path = 'images/leader.png'
                         twitter_type, image = calc_type(type, img_path)
-                        col6.write(type)
+                        col6.image(image)
                         components.html(twitter_type)
                     else:
                         type = '低音とクリアと柔和を読み取りました！あなたの声は【信頼】、【クール】タイプです！'
-                        img_path = 'energy.png'
+                        img_path = 'images/cool.png'
                         twitter_type, image = calc_type(type, img_path)
-                        col6.write(type)
+                        col6.image(image)
                         components.html(twitter_type)
             else:
                 if ave_fo > 165:
                     if odd_per > even_per + 10:
-                        type = '高音とハスキーと明瞭を読み取りました！あなたの声は【愛嬌】、【フレンドリー】タイプです！'
-                        img_path = 'energy.png'
+                        type = '高音とハスキーと明瞭を読み取りました！あなたの声は【愛嬌】、【フレンド】タイプです！'
+                        img_path = 'images/friend.png'
                         twitter_type, image = calc_type(type, img_path)
-                        col6.write(type)
+                        col6.image(image)
                         components.html(twitter_type)
                     else:
                         type = '高音とハスキーと柔和を読み取りました！あなたの声は【甘い】、【ソフト】タイプです！'
-                        img_path = 'energy.png'
+                        img_path = 'images/soft.png'
                         twitter_type, image = calc_type(type, img_path)
-                        col6.write(type)
+                        col6.image(image)
                         components.html(twitter_type)
                 else:
                     if odd_per > even_per + 10:
                         type = '低音とハスキーと明瞭を読み取りました！あなたの声は【妖艶】、【エレガント】タイプです！'
-                        img_path = 'energy.png'
+                        img_path = 'images/elegant.png'
                         twitter_type, image = calc_type(type, img_path)
-                        col6.write(type)
+                        col6.image(image)
                         components.html(twitter_type)
                     else:
                         type = '低音とハスキーと柔和を読み取りました！あなたの声は【貫禄】、【ジェントル】タイプです！'
-                        img_path = 'energy.png'
+                        img_path = 'images/gentle.png'
                         twitter_type, image = calc_type(type, img_path)
-                        col6.write(type)
+                        col6.image(image)
                         components.html(twitter_type)
 
             df = pd.DataFrame({"ファイル名": [uploaded_file.name],
