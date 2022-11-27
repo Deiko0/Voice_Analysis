@@ -192,7 +192,7 @@ def calc_type(type, img_path):
     image = Image.open(img_path)
     twitter_type = """
         <a href="http://twitter.com/intent/tweet" class="twitter-share-button"
-        data-text=""""" + type + """"
+        data-text="分析の結果、"""" + type + """"
         data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
         data-show-count="false">
         data-size="Large"
