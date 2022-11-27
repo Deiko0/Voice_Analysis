@@ -286,56 +286,36 @@ def main():
                     if odd_per > even_per + 10:
                         type = """高音とクリアと明瞭を読み取りました！あなたの声は【元気】、【エネルギー】タイプです！ pic.twitter.com/Meq89L8cjn"""
                         img_path = 'images/energy.png'
-                        twitter_type, image = calc_type(type, img_path)
-                        col6.image(image)
-                        components.html(twitter_type)
                     else:
                         type = """高音とクリアと柔和を読み取りました！あなたの声は【透明】、【ピュア】タイプです！ pic.twitter.com/oAYtjPJU6f"""
                         img_path = 'images/pure.png'
-                        twitter_type, image = calc_type(type, img_path)
-                        col6.image(image)
-                        components.html(twitter_type)
                 else:
                     if odd_per > even_per + 10:
                         type = """低音とクリアと明瞭を読み取りました！あなたの声は【勇敢】、【リーダー】タイプです！ pic.twitter.com/0NOxTAsgpf"""
                         img_path = 'images/leader.png'
-                        twitter_type, image = calc_type(type, img_path)
-                        col6.image(image)
-                        components.html(twitter_type)
                     else:
                         type = """低音とクリアと柔和を読み取りました！あなたの声は【信頼】、【クール】タイプです！ pic.twitter.com/r0bkvKhtxw"""
                         img_path = 'images/cool.png'
-                        twitter_type, image = calc_type(type, img_path)
-                        col6.image(image)
-                        components.html(twitter_type)
             else:
                 if ave_fo > 165:
                     if odd_per > even_per + 10:
                         type =  """高音とハスキーと明瞭を読み取りました！あなたの声は【愛嬌】、【フレンド】タイプです！ pic.twitter.com/E8bdjSXoZm"""
                         img_path = 'images/friend.png'
-                        twitter_type, image = calc_type(type, img_path)
-                        col6.image(image)
-                        components.html(twitter_type)
                     else:
                         type = """高音とハスキーと柔和を読み取りました！あなたの声は【甘い】、【ソフト】タイプです！ pic.twitter.com/CdWbv1pz6W"""
                         img_path = 'images/soft.png'
-                        twitter_type, image = calc_type(type, img_path)
-                        col6.image(image)
-                        components.html(twitter_type)
                 else:
                     if odd_per > even_per + 10:
                         type = """低音とハスキーと明瞭を読み取りました！あなたの声は【妖艶】、【エレガント】タイプです！ pic.twitter.com/84T4NuH8Fu"""
                         img_path = 'images/elegant.png'
-                        twitter_type, image = calc_type(type, img_path)
-                        col6.image(image)
-                        components.html(twitter_type)
                     else:
                         type = """低音とハスキーと柔和を読み取りました！あなたの声は【貫禄】、【ジェントル】タイプです！ pic.twitter.com/eOwDEqizCd"""
                         img_path = 'images/gentle.png'
-                        twitter_type, image = calc_type(type, img_path)
-                        col6.image(image)
-                        components.html(twitter_type)
 
+            twitter_type, image = calc_type(type, img_path)
+            col6.image(image)
+            st.write('分析結果のキャラクターイラストと一緒にツイートできます！')
+            components.html(twitter_type)
             df = pd.DataFrame({"ファイル名": [uploaded_file.name],
                                "基本周波数（Hz）": [ave_fo],
                                "HNR（dB）": [hnr],
