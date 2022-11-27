@@ -191,7 +191,7 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
 def calc_type(type, img_path):
     image = Image.open(img_path)
     twitter_type = """
-        <a class="twitter-share-button" href="http://twitter.com/intent/tweet?text=テスト https://twitter.com/deiko_cs/status/1596342905261940736/photo/1&hashtags=Voice">
+        <a class="twitter-share-button" href="http://twitter.com/intent/tweet?text=""" + type + """&hashtags=あなたの声は何タイプ,VoiceAnalysis">
         </a>
         <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
         """
