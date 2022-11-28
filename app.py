@@ -188,12 +188,12 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
 
 
 @st.cache
-def calc_type(type, img_path):
+def calc_type(type, pic, img_path):
     image = Image.open(img_path)
     twitter_type = """
         <a href="http://twitter.com/intent/tweet" class="twitter-share-button"
-        data-text=" """ + type + """ #あなたの声は何タイプ #VoiceAnalysis"
-        data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
+        data-text=" """ + type + """ #あなたの声は何タイプ #VoiceAnalysis https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
+        data-url=""" + pic + """
         Tweet
         </a>
         <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
@@ -284,35 +284,43 @@ def main():
             if hnr > 12:
                 if ave_fo > 165:
                     if odd_per > even_per + 10:
-                        type = """あなたの声は【元気】、【エネルギー】タイプです！ pic.twitter.com/Meq89L8cjn"""
+                        type = 'あなたの声は【元気】、【エネルギー】タイプです！'
+                        pic = 'pic.twitter.com/Meq89L8cjn'
                         img_path = 'images/energy.png'
                     else:
-                        type = """あなたの声は【透明】、【ピュア】タイプです！ pic.twitter.com/oAYtjPJU6f"""
+                        type = 'あなたの声は【透明】、【ピュア】タイプです！'
+                        pic = 'pic.twitter.com/oAYtjPJU6f'
                         img_path = 'images/pure.png'
                 else:
                     if odd_per > even_per + 10:
-                        type = """あなたの声は【勇敢】、【リーダー】タイプです！ pic.twitter.com/0NOxTAsgpf"""
+                        type = 'あなたの声は【勇敢】、【リーダー】タイプです！'
+                        pic = 'pic.twitter.com/0NOxTAsgpf'
                         img_path = 'images/leader.png'
                     else:
-                        type = """あなたの声は【信頼】、【クール】タイプです！ pic.twitter.com/r0bkvKhtxw"""
+                        type = 'あなたの声は【信頼】、【クール】タイプです！'
+                        pic = 'pic.twitter.com/r0bkvKhtxw'
                         img_path = 'images/cool.png'
             else:
                 if ave_fo > 165:
                     if odd_per > even_per + 10:
-                        type =  """あなたの声は【愛嬌】、【フレンド】タイプです！ pic.twitter.com/E8bdjSXoZm"""
+                        type = 'あなたの声は【愛嬌】、【フレンド】タイプです！'
+                        pic = 'pic.twitter.com/E8bdjSXoZm'
                         img_path = 'images/friend.png'
                     else:
-                        type = """あなたの声は【甘い】、【ソフト】タイプです！ pic.twitter.com/CdWbv1pz6W"""
+                        type = 'あなたの声は【甘い】、【ソフト】タイプです！'
+                        pic = 'pic.twitter.com/CdWbv1pz6W'
                         img_path = 'images/soft.png'
                 else:
                     if odd_per > even_per + 10:
-                        type = """あなたの声は【妖艶】、【エレガント】タイプです！ pic.twitter.com/84T4NuH8Fu"""
+                        type = 'あなたの声は【妖艶】、【エレガント】タイプです！'
+                        pic = 'pic.twitter.com/84T4NuH8Fu'
                         img_path = 'images/elegant.png'
                     else:
-                        type = """あなたの声は【貫禄】、【ジェントル】タイプです！ pic.twitter.com/eOwDEqizCd"""
+                        type = 'あなたの声は【貫禄】、【ジェントル】タイプです！'
+                        pic = 'pic.twitter.com/eOwDEqizCd'
                         img_path = 'images/gentle.png'
 
-            twitter_type, image = calc_type(type, img_path)
+            twitter_type, image = calc_type(type, pic, img_path)
             col6.image(image)
             st.write('分析結果のキャラクターイラストと一緒にツイートできます！')
             components.html(twitter_type)
