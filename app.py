@@ -40,7 +40,8 @@ def measurePitch(wav):
 
 @st.cache
 def calc_spec(wav, sr):
-    fo, voiced_flag, voiced_prob = librosa.pyin(wav, 80, 2000)
+    fo, voiced_flag, voiced_prob = librosa.pyin(
+        wav, fmin=librosa.note_to_hz('C2'), fmax=librosa.note_to_hz('C7'))
     d_fo = fo[~np.isnan(fo)]
     ave_fo = np.average(d_fo)
 
