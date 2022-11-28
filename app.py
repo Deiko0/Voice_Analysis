@@ -236,7 +236,7 @@ def main():
     st.markdown("---")
     st.subheader('How to use')
     col1, col2 = st.columns(2)
-    uploaded_file = col2.file_uploader('＊1秒以上のwav、モノラル音源')
+    uploaded_file = col2.file_uploader('＊1秒以上の.wavのみ対応')
 
     col1.write('1.「Browse files」から音声ファイルを読み込む')
     col1.write('2.ピンクのスライドバーで分析範囲を指定する')
@@ -244,101 +244,105 @@ def main():
     st.markdown("---")
 
     if uploaded_file is not None:
-        wav, sr = librosa.load(uploaded_file, sr=None)
-        wav = librosa.to_mono(wav)
-        wav_seconds = int(len(wav) / sr)
-
-        col2.audio(uploaded_file)
-
-        tgt_ranges = col2.slider(
-            "分析範囲（秒）", 0, wav_seconds, (0, wav_seconds))
-
-        wav_element = wav[tgt_ranges[0] * sr:tgt_ranges[1] * sr]
-
-        # spec
-        ave_fo, s_power, freqs, peaks, odd, even, odd_per, even_per = calc_spec(
-            wav_element, sr)
-
-        col3, col4 = st.columns(2)
-
-        wave_img = draw_wave(wav, tgt_ranges, sr, wav_seconds)
-        col3.image(wave_img)
-
-        spectrum_img = draw_spectrum(freqs, s_power, peaks)
-        col4.image(spectrum_img)
-
-        if tgt_ranges == (0, 0):
-            st.error('分析範囲が0秒です！設定から分析範囲を指定し直してください！', icon='😵')
-        elif odd_per + even_per == 0:
-            st.error('倍音が検出できません！設定から分析範囲を指定し直すか、別のファイルを読み込んでください！', icon='😵')
+        if uploaded_file.type != 'audio/x-wav':
+            st.error('このファイルのフォーマットに対応していません！.wavファイルを読み込んでください！', icon='😵')
         else:
-            # hnr
-            hnr = measurePitch(wav_element)
+            wav, sr = librosa.load(uploaded_file, sr=None)
+            wav = librosa.to_mono(wav)
+            wav_seconds = int(len(wav) / sr)
 
-            st.header("Result")
-            col5, col6 = st.columns(2)
+            col2.audio(uploaded_file)
 
-            result_img = draw_result(ave_fo, hnr, even_per, odd_per)
-            col5.image(result_img)
+            tgt_ranges = col2.slider(
+                "分析範囲（秒）", 0, wav_seconds, (0, wav_seconds))
 
-            if hnr > 12:
-                if ave_fo > 165:
-                    if odd_per > even_per + 10:
-                        type = 'あなたの声は【元気】、【エネルギー】タイプです！'
-                        pic = 'pic.twitter.com/Meq89L8cjn'
-                        img_path = 'images/energy.png'
-                    else:
-                        type = 'あなたの声は【透明】、【ピュア】タイプです！'
-                        pic = 'pic.twitter.com/oAYtjPJU6f'
-                        img_path = 'images/pure.png'
-                else:
-                    if odd_per > even_per + 10:
-                        type = 'あなたの声は【勇敢】、【リーダー】タイプです！'
-                        pic = 'pic.twitter.com/0NOxTAsgpf'
-                        img_path = 'images/leader.png'
-                    else:
-                        type = 'あなたの声は【信頼】、【クール】タイプです！'
-                        pic = 'pic.twitter.com/r0bkvKhtxw'
-                        img_path = 'images/cool.png'
+            wav_element = wav[tgt_ranges[0] * sr:tgt_ranges[1] * sr]
+
+            # spec
+            ave_fo, s_power, freqs, peaks, odd, even, odd_per, even_per = calc_spec(
+                wav_element, sr)
+
+            col3, col4 = st.columns(2)
+
+            wave_img = draw_wave(wav, tgt_ranges, sr, wav_seconds)
+            col3.image(wave_img)
+
+            spectrum_img = draw_spectrum(freqs, s_power, peaks)
+            col4.image(spectrum_img)
+
+            if tgt_ranges == (0, 0):
+                st.error('分析範囲が0秒です！設定から分析範囲を指定し直してください！', icon='😵')
+            elif odd_per + even_per == 0:
+                st.error(
+                    '倍音が検出できません！設定から分析範囲を指定し直すか、別のファイルを読み込んでください！', icon='😵')
             else:
-                if ave_fo > 165:
-                    if odd_per > even_per + 10:
-                        type = 'あなたの声は【愛嬌】、【フレンド】タイプです！'
-                        pic = 'pic.twitter.com/E8bdjSXoZm'
-                        img_path = 'images/friend.png'
+                # hnr
+                hnr = measurePitch(wav_element)
+
+                st.header("Result")
+                col5, col6 = st.columns(2)
+
+                result_img = draw_result(ave_fo, hnr, even_per, odd_per)
+                col5.image(result_img)
+
+                if hnr > 12:
+                    if ave_fo > 165:
+                        if odd_per > even_per + 10:
+                            type = 'あなたの声は【元気】、【エネルギー】タイプです！'
+                            pic = 'pic.twitter.com/Meq89L8cjn'
+                            img_path = 'images/energy.png'
+                        else:
+                            type = 'あなたの声は【透明】、【ピュア】タイプです！'
+                            pic = 'pic.twitter.com/oAYtjPJU6f'
+                            img_path = 'images/pure.png'
                     else:
-                        type = 'あなたの声は【甘い】、【ソフト】タイプです！'
-                        pic = 'pic.twitter.com/CdWbv1pz6W'
-                        img_path = 'images/soft.png'
+                        if odd_per > even_per + 10:
+                            type = 'あなたの声は【勇敢】、【リーダー】タイプです！'
+                            pic = 'pic.twitter.com/0NOxTAsgpf'
+                            img_path = 'images/leader.png'
+                        else:
+                            type = 'あなたの声は【信頼】、【クール】タイプです！'
+                            pic = 'pic.twitter.com/r0bkvKhtxw'
+                            img_path = 'images/cool.png'
                 else:
-                    if odd_per > even_per + 10:
-                        type = 'あなたの声は【妖艶】、【エレガント】タイプです！'
-                        pic = 'pic.twitter.com/84T4NuH8Fu'
-                        img_path = 'images/elegant.png'
+                    if ave_fo > 165:
+                        if odd_per > even_per + 10:
+                            type = 'あなたの声は【愛嬌】、【フレンド】タイプです！'
+                            pic = 'pic.twitter.com/E8bdjSXoZm'
+                            img_path = 'images/friend.png'
+                        else:
+                            type = 'あなたの声は【甘い】、【ソフト】タイプです！'
+                            pic = 'pic.twitter.com/CdWbv1pz6W'
+                            img_path = 'images/soft.png'
                     else:
-                        type = 'あなたの声は【貫禄】、【ジェントル】タイプです！'
-                        pic = 'pic.twitter.com/eOwDEqizCd'
-                        img_path = 'images/gentle.png'
+                        if odd_per > even_per + 10:
+                            type = 'あなたの声は【妖艶】、【エレガント】タイプです！'
+                            pic = 'pic.twitter.com/84T4NuH8Fu'
+                            img_path = 'images/elegant.png'
+                        else:
+                            type = 'あなたの声は【貫禄】、【ジェントル】タイプです！'
+                            pic = 'pic.twitter.com/eOwDEqizCd'
+                            img_path = 'images/gentle.png'
 
-            twitter_type, image = calc_type(type, pic, img_path)
-            col6.image(image)
-            st.write('分析結果のキャラクターイラストと一緒にツイートできます！')
-            components.html(twitter_type)
-            df = pd.DataFrame({"ファイル名": [uploaded_file.name],
-                               "基本周波数（Hz）": [ave_fo],
-                               "HNR（dB）": [hnr],
-                               "奇数倍音（％）": [odd_per],
-                               "偶数倍音（％）": [even_per]}
-                              )
-            st.dataframe(df)
+                twitter_type, image = calc_type(type, pic, img_path)
+                col6.image(image)
+                st.write('分析結果のキャラクターイラストと一緒にツイートできます！')
+                components.html(twitter_type)
+                df = pd.DataFrame({"ファイル名": [uploaded_file.name],
+                                   "基本周波数（Hz）": [ave_fo],
+                                   "HNR（dB）": [hnr],
+                                   "奇数倍音（％）": [odd_per],
+                                   "偶数倍音（％）": [even_per]}
+                                  )
+                st.dataframe(df)
 
-            csv = df.to_csv(index=False)
-            b64 = base64.b64encode(csv.encode()).decode()
-            href = f'<a href="data:application/octet-stream;base64,{b64}" download="result.csv">download</a>'
-            st.markdown(
-                f'<span style="font-family:monospace;font-size:16px">csvファイルでダウンロード {href}</span>', unsafe_allow_html=True)
-            st.markdown(
-                f'<span style="font-family:monospace;font-size:16px">基本周波数とHNRは平均で計算しています。</span>', unsafe_allow_html=True)
+                csv = df.to_csv(index=False)
+                b64 = base64.b64encode(csv.encode()).decode()
+                href = f'<a href="data:application/octet-stream;base64,{b64}" download="result.csv">Download</a>'
+                st.markdown(
+                    f'<span style="font-family:monospace;font-size:16px">csvファイルでダウンロード {href}</span>', unsafe_allow_html=True)
+                st.markdown(
+                    f'<span style="font-family:monospace;font-size:16px">基本周波数とHNRは平均で計算しています。</span>', unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
