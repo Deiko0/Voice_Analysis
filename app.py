@@ -81,7 +81,7 @@ def draw_wave(wav, tgt_ranges, sr, wav_seconds):
                       plot_bgcolor="#b7c3d1",
                       paper_bgcolor="#e5edef",
                       font_color="#20323e",
-                      font_family="sans-serif",
+                      font_family="Hiragino Maru Gothic Pro",
                       font_size=20
                       )
     img = fig.to_image(format='png', width=600, height=525)
