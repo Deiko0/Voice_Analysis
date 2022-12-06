@@ -93,7 +93,7 @@ def draw_spectrum(freqs, s_power, peaks):
     fig.add_trace(go.Scatter(x=freqs, y=s_power,
                   mode='lines', line=dict(color="#2584c1")))
     fig.add_trace(go.Scatter(
-        x=freqs[peaks[0:7]], y=s_power[peaks[0:7]], mode='markers', marker=dict(
+        x=freqs[peaks[0:7]], y=s_power[peaks[0:7]], mode='markers+text', textposition='top center', textfont=dict(size=15), text=freqs[peaks[0:7]], marker=dict(
             color='#e3619f', size=10)))
     fig.update_layout(title="Frequency Spectrum", height=GRAPH_HEIGHT,
                       xaxis=dict(title="Frequency(Hz)",
