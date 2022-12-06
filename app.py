@@ -81,7 +81,6 @@ def draw_wave(wav, tgt_ranges, sr, wav_seconds):
                       plot_bgcolor="#b7c3d1",
                       paper_bgcolor="#e5edef",
                       font_color="#20323e",
-                      font_family="Hiragino Maru Gothic Pro",
                       font_size=20
                       )
     img = fig.to_image(format='png', width=600, height=525)
@@ -106,7 +105,6 @@ def draw_spectrum(freqs, s_power, peaks):
                       plot_bgcolor="#b7c3d1",
                       paper_bgcolor="#e5edef",
                       font_color="#20323e",
-                      font_family="sans-serif",
                       font_size=20
                       )
     img = fig.to_image(format='png', width=600, height=525)
@@ -126,18 +124,16 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
 
     fig.append_trace(go.Scatter(y=[''], x=[New_fo_Value], marker=dict(
         color=fo_color, size=40, symbol='diamond')), row=1, col=1)
-    fig.add_annotation(text='低音', xref="paper", yref="paper",
+    fig.add_annotation(text='Low', xref="paper", yref="paper",
                        x=0, y=0.86, showarrow=False, bgcolor="#e5edef",
                        opacity=0.8,
                        font_color="#20323e",
-                       font_family="sans-serif",
                        font_size=30
                        )
-    fig.add_annotation(text='高音', xref="paper", yref="paper",
+    fig.add_annotation(text='High', xref="paper", yref="paper",
                        x=1, y=0.86, showarrow=False, bgcolor="#e5edef",
                        opacity=0.8,
                        font_color="#20323e",
-                       font_family="sans-serif",
                        font_size=30
                        )
 
@@ -150,16 +146,14 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
 
     fig.append_trace(go.Scatter(y=[''], x=[New_hnr_Value], marker=dict(
         color=hnr_color, size=40, symbol='diamond')), row=2, col=1)
-    fig.add_annotation(text='ハスキー', xref="paper", yref="paper",
+    fig.add_annotation(text='Husky', xref="paper", yref="paper",
                        x=0, y=0.43, showarrow=False, bgcolor="#e5edef",
                        opacity=0.8,
-                       font_family="sans-serif",
                        font_size=30
                        )
-    fig.add_annotation(text='クリア', xref="paper", yref="paper",
+    fig.add_annotation(text='Clear', xref="paper", yref="paper",
                        x=1, y=0.43, showarrow=False, bgcolor="#e5edef",
                        opacity=0.8,
-                       font_family="sans-serif",
                        font_size=30
                        )
 
@@ -167,13 +161,13 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
         color='#2584c1')), row=3, col=1)
     fig.append_trace(go.Funnel(y=[''], x=[odd_per], textinfo='text', marker=dict(
         color='#e3619f')), row=3, col=1)
-    fig.add_annotation(text='柔和', xref="paper", yref="paper",
+    fig.add_annotation(text='Warm', xref="paper", yref="paper",
                        x=0, y=0, showarrow=False, bgcolor="#e5edef",
                        opacity=0.8, font=dict(
                             color="#20323e",
                             size=30
                        ))
-    fig.add_annotation(text='明瞭', xref="paper", yref="paper",
+    fig.add_annotation(text='Clarity', xref="paper", yref="paper",
                        x=1, y=0, showarrow=False, bgcolor="#e5edef",
                        opacity=0.8, font=dict(
                             color="#20323e",
