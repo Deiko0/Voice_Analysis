@@ -77,7 +77,7 @@ def draw_wave(wav, tgt_ranges, sr, wav_seconds):
                                  str(0), str(int(wav_seconds / 2)), str(wav_seconds)], title="Time(s)", gridcolor='#e5edef', color="#20323e"),
                       yaxis=dict(gridcolor='#e5edef',
                                  color="#20323e", showticklabels=False),
-                      margin=dict(t=50, b=0, l=10, r=10),
+                      margin=dict(t=50, b=50, l=10, r=10),
                       plot_bgcolor="#b7c3d1",
                       paper_bgcolor="#e5edef",
                       font_color="#20323e",
@@ -101,7 +101,7 @@ def draw_spectrum(freqs, s_power, peaks):
                       yaxis=dict(gridcolor='#e5edef',
                                  color="#20323e", showticklabels=False),
                       showlegend=False,
-                      margin=dict(t=50, b=0, l=10, r=10),
+                      margin=dict(t=50, b=50, l=10, r=10),
                       plot_bgcolor="#b7c3d1",
                       paper_bgcolor="#e5edef",
                       font_color="#20323e",
@@ -163,16 +163,16 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
         color='#e3619f')), row=3, col=1)
     fig.add_annotation(text='Warm', xref="paper", yref="paper",
                        x=0, y=0, showarrow=False, bgcolor="#e5edef",
-                       opacity=0.8, font=dict(
-                            color="#20323e",
-                            size=30
-                       ))
+                       opacity=0.8,
+                       font_color="#20323e",
+                       font_size=30
+                       )
     fig.add_annotation(text='Clarity', xref="paper", yref="paper",
                        x=1, y=0, showarrow=False, bgcolor="#e5edef",
-                       opacity=0.8, font=dict(
-                            color="#20323e",
-                            size=30
-                       ))
+                       opacity=0.8,
+                       font_color="#20323e",
+                       font_size=30
+                       )
     fig.update_yaxes(gridcolor='#e5edef')
     fig.update_xaxes(dtick=1.25, showticklabels=False,
                      gridcolor='#e5edef')
