@@ -72,7 +72,7 @@ def draw_wave(wav, tgt_ranges, sr, wav_seconds):
         y=wav[::HOP], mode='lines', line=dict(color="#2584c1")))
     fig.add_vrect(x0=int(tgt_ranges[0] * sr / HOP), x1=int(tgt_ranges[1] * sr / HOP),
                   fillcolor="#d89648", opacity=0.5, layer="below", line_width=0)
-    fig.update_layout(title="Waveform", height=GRAPH_HEIGHT,
+    fig.update_layout(title="音声波形", height=GRAPH_HEIGHT,
                       xaxis=dict(tickmode='array', tickvals=[1, int(len(wav[::HOP]) / 2), len(wav[::HOP])], ticktext=[
                                  str(0), str(int(wav_seconds / 2)), str(wav_seconds)], title="Time(s)", gridcolor='#e5edef', color="#20323e"),
                       yaxis=dict(gridcolor='#e5edef',
@@ -80,9 +80,9 @@ def draw_wave(wav, tgt_ranges, sr, wav_seconds):
                       margin=dict(t=50, b=0, l=10, r=10),
                       plot_bgcolor="#b7c3d1",
                       paper_bgcolor="#e5edef",
-                      font=dict(
-                          color="#20323e",
-                          size=20)
+                      font_color="#20323e",
+                      font_family="sans-serif",
+                      font_size=20
                       )
     img = fig.to_image(format='png', width=600, height=525)
     return img
@@ -96,7 +96,7 @@ def draw_spectrum(freqs, s_power, peaks):
     fig.add_trace(go.Scatter(
         x=freqs[peaks[0:7]], y=s_power[peaks[0:7]], mode='markers', marker=dict(
             color='#e3619f', size=10)))
-    fig.update_layout(title="Frequency Spectrum", height=GRAPH_HEIGHT,
+    fig.update_layout(title="周波数スペクトラム", height=GRAPH_HEIGHT,
                       xaxis=dict(title="Frequency(Hz)",
                                  range=[0, 2000], gridcolor='#e5edef', color="#20323e"),
                       yaxis=dict(gridcolor='#e5edef',
@@ -105,9 +105,9 @@ def draw_spectrum(freqs, s_power, peaks):
                       margin=dict(t=50, b=0, l=10, r=10),
                       plot_bgcolor="#b7c3d1",
                       paper_bgcolor="#e5edef",
-                      font=dict(
-                          color="#20323e",
-                          size=20)
+                      font_color="#20323e",
+                      font_family="sans-serif",
+                      font_size=20
                       )
     img = fig.to_image(format='png', width=600, height=525)
     return img
@@ -126,18 +126,20 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
 
     fig.append_trace(go.Scatter(y=[''], x=[New_fo_Value], marker=dict(
         color=fo_color, size=40, symbol='diamond')), row=1, col=1)
-    fig.add_annotation(text='Low', xref="paper", yref="paper",
+    fig.add_annotation(text='低音', xref="paper", yref="paper",
                        x=0, y=0.86, showarrow=False, bgcolor="#e5edef",
-                       opacity=0.8, font=dict(
-                           color="#20323e",
-                           size=30
-                       ))
-    fig.add_annotation(text='High', xref="paper", yref="paper",
+                       opacity=0.8,
+                       font_color="#20323e",
+                       font_family="sans-serif",
+                       font_size=30
+                       )
+    fig.add_annotation(text='高音', xref="paper", yref="paper",
                        x=1, y=0.86, showarrow=False, bgcolor="#e5edef",
-                       opacity=0.8, font=dict(
-                           color="#20323e",
-                           size=30
-                       ))
+                       opacity=0.8,
+                       font_color="#20323e",
+                       font_family="sans-serif",
+                       font_size=30
+                       )
 
     clip_hnr = np.clip(hnr, 7, 17)
     New_hnr_Value = (((clip_hnr - 7) * 10) / 10) - 5
@@ -148,30 +150,30 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
 
     fig.append_trace(go.Scatter(y=[''], x=[New_hnr_Value], marker=dict(
         color=hnr_color, size=40, symbol='diamond')), row=2, col=1)
-    fig.add_annotation(text='Husky', xref="paper", yref="paper",
+    fig.add_annotation(text='ハスキー', xref="paper", yref="paper",
                        x=0, y=0.43, showarrow=False, bgcolor="#e5edef",
-                       opacity=0.8, font=dict(
-                            color="#20323e",
-                            size=30
-                       ))
-    fig.add_annotation(text='Clear', xref="paper", yref="paper",
+                       opacity=0.8,
+                       font_family="sans-serif",
+                       font_size=30
+                       )
+    fig.add_annotation(text='クリア', xref="paper", yref="paper",
                        x=1, y=0.43, showarrow=False, bgcolor="#e5edef",
-                       opacity=0.8, font=dict(
-                            color="#20323e",
-                            size=30
-                       ))
+                       opacity=0.8,
+                       font_family="sans-serif",
+                       font_size=30
+                       )
 
     fig.append_trace(go.Funnel(y=[''], x=[even_per], textinfo='text', marker=dict(
         color='#2584c1')), row=3, col=1)
     fig.append_trace(go.Funnel(y=[''], x=[odd_per], textinfo='text', marker=dict(
         color='#e3619f')), row=3, col=1)
-    fig.add_annotation(text='Warm', xref="paper", yref="paper",
+    fig.add_annotation(text='柔和', xref="paper", yref="paper",
                        x=0, y=0, showarrow=False, bgcolor="#e5edef",
                        opacity=0.8, font=dict(
                             color="#20323e",
                             size=30
                        ))
-    fig.add_annotation(text='Clarity', xref="paper", yref="paper",
+    fig.add_annotation(text='明瞭', xref="paper", yref="paper",
                        x=1, y=0, showarrow=False, bgcolor="#e5edef",
                        opacity=0.8, font=dict(
                             color="#20323e",
@@ -341,9 +343,9 @@ def main():
                 b64 = base64.b64encode(csv.encode()).decode()
                 href = f'<a href="data:application/octet-stream;base64,{b64}" download="result.csv">Download</a>'
                 st.markdown(
-                    f'<span style="font-family:monospace;font-size:16px">csvファイルでダウンロード {href}</span>', unsafe_allow_html=True)
+                    f'<span style="font-size:16px">csvファイルでダウンロード {href}</span>', unsafe_allow_html=True)
                 st.markdown(
-                    f'<span style="font-family:monospace;font-size:16px">基本周波数とHNRは平均で計算しています。</span>', unsafe_allow_html=True)
+                    f'<span style="font-size:16px">基本周波数とHNRは平均で計算しています。</span>', unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
