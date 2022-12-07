@@ -1,11 +1,9 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import librosa
-import librosa.display
 import numpy as np
 from scipy import signal
 import plotly.graph_objects as go
-import plotly.express as px
 from plotly.subplots import make_subplots
 import pandas as pd
 import base64
@@ -19,13 +17,12 @@ GRAPH_HEIGHT = 300
 
 st.set_page_config(
     page_title="Voice Analysis",
-    page_icon="🎙",
     menu_items={
         'Get Help': 'https://twitter.com/deiko_cs',
         'Report a bug': "https://twitter.com/deiko_cs",
         'About': """
-         # 声の分析ツール
-         このツールはアップロードした音声を分析して、グラフや声のタイプを表示します。
+         # 声を分析するWebアプリ
+         このWebアプリはアップロードした音声を分析することができます。周波数スペクトルや声の特徴、声のタイプを表示します。
          """
     })
 
@@ -235,9 +232,9 @@ def main():
     col1, col2 = st.columns(2)
     uploaded_file = col2.file_uploader('＊1秒以上の.wavのみ対応')
 
-    col1.write('1.「Browse files」から音声ファイルを読み込む')
-    col1.write('2.ピンクのスライドバーで分析範囲を指定する')
-    col1.write('3.グラフや表に分析結果が表示される')
+    col1.write('①「Browse files」から音声ファイルを読み込む')
+    col1.write('② ピンクのスライドバーで分析範囲を指定する')
+    col1.write('③ グラフや表に分析結果が表示される')
     st.markdown("---")
 
     if uploaded_file is not None:
@@ -245,7 +242,6 @@ def main():
             st.error('このファイルのフォーマットに対応していません！.wavファイルを読み込んでください！', icon='😵')
         else:
             wav, sr = librosa.load(uploaded_file, sr=None)
-            wav = librosa.to_mono(wav)
             wav_seconds = int(len(wav) / sr)
 
             col2.audio(uploaded_file)
