@@ -238,7 +238,7 @@ def main():
     st.markdown("---")
 
     if uploaded_file is not None:
-        if uploaded_file.type != 'audio/x-wav':
+        if uploaded_file.type != 'audio/x-wav' or uploaded_file.type != 'audio/wav' or uploaded_file.type != 'audio/wave' or uploaded_file.type != 'audio/vnd.wave':
             st.error('このファイルのフォーマットに対応していません！.wavファイルを読み込んでください！', icon='😵')
         else:
             wav, sr = librosa.load(uploaded_file, sr=None)
