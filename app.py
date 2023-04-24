@@ -27,7 +27,7 @@ st.set_page_config(
     })
 
 
-@st.cache
+@st.cache_data
 def measurePitch(wav):
     sound = parselmouth.Sound(wav)
     harmonicity = call(sound, "To Harmonicity (cc)", 0.01, 75, 0.1, 1.0)
@@ -35,7 +35,7 @@ def measurePitch(wav):
     return hnr
 
 
-@st.cache
+@st.cache_data
 def calc_spec(wav, sr):
     fo, voiced_flag, voiced_prob = librosa.pyin(
         wav, fmin=librosa.note_to_hz('C2'), fmax=librosa.note_to_hz('C7'))
@@ -62,7 +62,7 @@ def calc_spec(wav, sr):
     return ave_fo, s_power, freqs, peaks, odd, even, odd_per, even_per
 
 
-@st.cache
+@st.cache_data
 def draw_wave(wav, tgt_ranges, sr, wav_seconds):
     fig = go.Figure()
     fig.add_trace(go.Scatter(
@@ -84,7 +84,7 @@ def draw_wave(wav, tgt_ranges, sr, wav_seconds):
     return img
 
 
-@st.cache
+@st.cache_data
 def draw_spectrum(freqs, s_power, peaks):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=freqs, y=s_power,
@@ -108,7 +108,7 @@ def draw_spectrum(freqs, s_power, peaks):
     return img
 
 
-@st.cache
+@st.cache_data
 def draw_result(ave_fo, hnr, even_per, odd_per):
     fig = make_subplots(rows=3, cols=1)
 
@@ -181,7 +181,7 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
     return img
 
 
-@st.cache
+@st.cache_data
 def calc_type(type, img_path):
     image = Image.open(img_path)
     twitter_type = """
