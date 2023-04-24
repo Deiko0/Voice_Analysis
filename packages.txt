@@ -1,2 +1,2 @@
-libsndfile2-dev
+libsndfile-dev
 ffmpeg
