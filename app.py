@@ -18,13 +18,14 @@ GRAPH_HEIGHT = 300
 st.set_page_config(
     page_title="Voice Analysis",
     menu_items={
-        'Get Help': 'https://twitter.com/deiko_cs',
-        'Report a bug': "https://twitter.com/deiko_cs",
-        'About': """
+        "Get Help": "https://twitter.com/deiko_cs",
+        "Report a bug": "https://twitter.com/deiko_cs",
+        "About": """
          # 声を分析するWebアプリ
          このWebアプリはアップロードした音声を分析することができます。周波数スペクトルや声の特徴、声のタイプを表示します。
-         """
-    })
+         """,
+    },
+)
 
 
 @st.cache_data
@@ -38,12 +39,12 @@ def measurePitch(wav):
 @st.cache_data
 def calc_spec(wav, sr):
     fo, voiced_flag, voiced_prob = librosa.pyin(
-        wav, fmin=librosa.note_to_hz('C2'), fmax=librosa.note_to_hz('C7'))
-    d_fo = fo[~np.isnan(fo)]
-    ave_fo = np.average(d_fo)
+        wav, fmin=librosa.note_to_hz("D2"), fmax=librosa.note_to_hz("C5")
+    )
+    ave_fo = np.average(fo[voiced_flag])
 
-    spectrum = np.abs(np.fft.fft(wav, sr)[:int(sr / 2)])
-    freqs = np.fft.fftfreq(sr, d=1.0 / sr)[:int(sr / 2)]
+    spectrum = np.abs(np.fft.fft(wav, sr)[: int(sr / 2)])
+    freqs = np.fft.fftfreq(sr, d=1.0 / sr)[: int(sr / 2)]
     s_power = np.abs(spectrum)
 
     peaks = signal.argrelmax(s_power, order=80)[0]
@@ -65,46 +66,69 @@ def calc_spec(wav, sr):
 @st.cache_data
 def draw_wave(wav, tgt_ranges, sr, wav_seconds):
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        y=wav[::HOP], mode='lines', line=dict(color="#2584c1")))
-    fig.add_vrect(x0=int(tgt_ranges[0] * sr / HOP), x1=int(tgt_ranges[1] * sr / HOP),
-                  fillcolor="#d89648", opacity=0.5, layer="below", line_width=0)
-    fig.update_layout(title="Waveform", height=GRAPH_HEIGHT,
-                      xaxis=dict(tickmode='array', tickvals=[1, int(len(wav[::HOP]) / 2), len(wav[::HOP])], ticktext=[
-                                 str(0), str(int(wav_seconds / 2)), str(wav_seconds)], title="Time(s)", gridcolor='#e5edef', color="#20323e"),
-                      yaxis=dict(gridcolor='#e5edef',
-                                 color="#20323e", showticklabels=False),
-                      margin=dict(t=50, b=50, l=10, r=10),
-                      plot_bgcolor="#b7c3d1",
-                      paper_bgcolor="#e5edef",
-                      font_color="#20323e",
-                      font_size=20
-                      )
-    img = fig.to_image(format='png', width=600, height=525)
+    fig.add_trace(go.Scatter(y=wav[::HOP], mode="lines", line=dict(color="#2584c1")))
+    fig.add_vrect(
+        x0=int(tgt_ranges[0] * sr / HOP),
+        x1=int(tgt_ranges[1] * sr / HOP),
+        fillcolor="#d89648",
+        opacity=0.5,
+        layer="below",
+        line_width=0,
+    )
+    fig.update_layout(
+        title="Waveform",
+        height=GRAPH_HEIGHT,
+        xaxis=dict(
+            tickmode="array",
+            tickvals=[1, int(len(wav[::HOP]) / 2), len(wav[::HOP])],
+            ticktext=[str(0), str(int(wav_seconds / 2)), str(wav_seconds)],
+            title="Time(s)",
+            gridcolor="#e5edef",
+            color="#20323e",
+        ),
+        yaxis=dict(gridcolor="#e5edef", color="#20323e", showticklabels=False),
+        margin=dict(t=50, b=50, l=10, r=10),
+        plot_bgcolor="#b7c3d1",
+        paper_bgcolor="#e5edef",
+        font_color="#20323e",
+        font_size=20,
+    )
+    img = fig.to_image(format="png", width=600, height=525)
     return img
 
 
 @st.cache_data
 def draw_spectrum(freqs, s_power, peaks):
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=freqs, y=s_power,
-                  mode='lines', line=dict(color="#2584c1")))
-    fig.add_trace(go.Scatter(
-        x=freqs[peaks[0:7]], y=s_power[peaks[0:7]], mode='markers+text', textposition='top center', textfont=dict(size=15), text=freqs[peaks[0:7]], marker=dict(
-            color='#e3619f', size=10)))
-    fig.update_layout(title="Frequency Spectrum", height=GRAPH_HEIGHT,
-                      xaxis=dict(title="Frequency(Hz)",
-                                 range=[0, 2000], gridcolor='#e5edef', color="#20323e"),
-                      yaxis=dict(gridcolor='#e5edef',
-                                 color="#20323e", showticklabels=False),
-                      showlegend=False,
-                      margin=dict(t=50, b=50, l=10, r=10),
-                      plot_bgcolor="#b7c3d1",
-                      paper_bgcolor="#e5edef",
-                      font_color="#20323e",
-                      font_size=20
-                      )
-    img = fig.to_image(format='png', width=600, height=525)
+    fig.add_trace(
+        go.Scatter(x=freqs, y=s_power, mode="lines", line=dict(color="#2584c1"))
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=freqs[peaks[0:7]],
+            y=s_power[peaks[0:7]],
+            mode="markers+text",
+            textposition="top center",
+            textfont=dict(size=15),
+            text=freqs[peaks[0:7]],
+            marker=dict(color="#e3619f", size=10),
+        )
+    )
+    fig.update_layout(
+        title="Frequency Spectrum",
+        height=GRAPH_HEIGHT,
+        xaxis=dict(
+            title="Frequency(Hz)", range=[0, 2000], gridcolor="#e5edef", color="#20323e"
+        ),
+        yaxis=dict(gridcolor="#e5edef", color="#20323e", showticklabels=False),
+        showlegend=False,
+        margin=dict(t=50, b=50, l=10, r=10),
+        plot_bgcolor="#b7c3d1",
+        paper_bgcolor="#e5edef",
+        font_color="#20323e",
+        font_size=20,
+    )
+    img = fig.to_image(format="png", width=600, height=525)
     return img
 
 
@@ -115,68 +139,129 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
     clip_ave_fo = np.clip(ave_fo, 80, 250)
     New_fo_Value = (((clip_ave_fo - 80) * 10) / 170) - 5
     if New_fo_Value > 0:
-        fo_color = '#e3619f'
+        fo_color = "#e3619f"
     else:
-        fo_color = '#2584c1'
+        fo_color = "#2584c1"
 
-    fig.append_trace(go.Scatter(y=[''], x=[New_fo_Value], marker=dict(
-        color=fo_color, size=40, symbol='diamond')), row=1, col=1)
-    fig.add_annotation(text='Low', xref="paper", yref="paper",
-                       x=0, y=0.86, showarrow=False, bgcolor="#e5edef",
-                       opacity=0.8,
-                       font_color="#20323e",
-                       font_size=30
-                       )
-    fig.add_annotation(text='High', xref="paper", yref="paper",
-                       x=1, y=0.86, showarrow=False, bgcolor="#e5edef",
-                       opacity=0.8,
-                       font_color="#20323e",
-                       font_size=30
-                       )
+    fig.append_trace(
+        go.Scatter(
+            y=[""],
+            x=[New_fo_Value],
+            marker=dict(color=fo_color, size=40, symbol="diamond"),
+        ),
+        row=1,
+        col=1,
+    )
+    fig.add_annotation(
+        text="Low",
+        xref="paper",
+        yref="paper",
+        x=0,
+        y=0.86,
+        showarrow=False,
+        bgcolor="#e5edef",
+        opacity=0.8,
+        font_color="#20323e",
+        font_size=30,
+    )
+    fig.add_annotation(
+        text="High",
+        xref="paper",
+        yref="paper",
+        x=1,
+        y=0.86,
+        showarrow=False,
+        bgcolor="#e5edef",
+        opacity=0.8,
+        font_color="#20323e",
+        font_size=30,
+    )
 
     clip_hnr = np.clip(hnr, 7, 17)
     New_hnr_Value = (((clip_hnr - 7) * 10) / 10) - 5
     if New_hnr_Value > 0:
-        hnr_color = '#e3619f'
+        hnr_color = "#e3619f"
     else:
-        hnr_color = '#2584c1'
+        hnr_color = "#2584c1"
 
-    fig.append_trace(go.Scatter(y=[''], x=[New_hnr_Value], marker=dict(
-        color=hnr_color, size=40, symbol='diamond')), row=2, col=1)
-    fig.add_annotation(text='Husky', xref="paper", yref="paper",
-                       x=0, y=0.43, showarrow=False, bgcolor="#e5edef",
-                       opacity=0.8,
-                       font_size=30
-                       )
-    fig.add_annotation(text='Clear', xref="paper", yref="paper",
-                       x=1, y=0.43, showarrow=False, bgcolor="#e5edef",
-                       opacity=0.8,
-                       font_size=30
-                       )
+    fig.append_trace(
+        go.Scatter(
+            y=[""],
+            x=[New_hnr_Value],
+            marker=dict(color=hnr_color, size=40, symbol="diamond"),
+        ),
+        row=2,
+        col=1,
+    )
+    fig.add_annotation(
+        text="Husky",
+        xref="paper",
+        yref="paper",
+        x=0,
+        y=0.43,
+        showarrow=False,
+        bgcolor="#e5edef",
+        opacity=0.8,
+        font_size=30,
+    )
+    fig.add_annotation(
+        text="Clear",
+        xref="paper",
+        yref="paper",
+        x=1,
+        y=0.43,
+        showarrow=False,
+        bgcolor="#e5edef",
+        opacity=0.8,
+        font_size=30,
+    )
 
-    fig.append_trace(go.Funnel(y=[''], x=[even_per], textinfo='text', marker=dict(
-        color='#2584c1')), row=3, col=1)
-    fig.append_trace(go.Funnel(y=[''], x=[odd_per], textinfo='text', marker=dict(
-        color='#e3619f')), row=3, col=1)
-    fig.add_annotation(text='Warm', xref="paper", yref="paper",
-                       x=0, y=0, showarrow=False, bgcolor="#e5edef",
-                       opacity=0.8,
-                       font_color="#20323e",
-                       font_size=30
-                       )
-    fig.add_annotation(text='Clarity', xref="paper", yref="paper",
-                       x=1, y=0, showarrow=False, bgcolor="#e5edef",
-                       opacity=0.8,
-                       font_color="#20323e",
-                       font_size=30
-                       )
-    fig.update_yaxes(gridcolor='#e5edef')
-    fig.update_xaxes(dtick=1.25, showticklabels=False,
-                     gridcolor='#e5edef')
-    fig.update_layout(xaxis=dict(range=[-5, 5]), xaxis2=dict(range=[-5, 5]), showlegend=False, margin=dict(
-        t=0, b=0, l=10, r=10), plot_bgcolor="#b7c3d1", paper_bgcolor="#e5edef")
+    fig.append_trace(
+        go.Funnel(y=[""], x=[even_per], textinfo="text", marker=dict(color="#2584c1")),
+        row=3,
+        col=1,
+    )
+    fig.append_trace(
+        go.Funnel(y=[""], x=[odd_per], textinfo="text", marker=dict(color="#e3619f")),
+        row=3,
+        col=1,
+    )
+    fig.add_annotation(
+        text="Warm",
+        xref="paper",
+        yref="paper",
+        x=0,
+        y=0,
+        showarrow=False,
+        bgcolor="#e5edef",
+        opacity=0.8,
+        font_color="#20323e",
+        font_size=30,
+    )
+    fig.add_annotation(
+        text="Clarity",
+        xref="paper",
+        yref="paper",
+        x=1,
+        y=0,
+        showarrow=False,
+        bgcolor="#e5edef",
+        opacity=0.8,
+        font_color="#20323e",
+        font_size=30,
+    )
+    fig.update_yaxes(gridcolor="#e5edef")
+    fig.update_xaxes(dtick=1.25, showticklabels=False, gridcolor="#e5edef")
+    fig.update_layout(
+        xaxis=dict(range=[-5, 5]),
+        xaxis2=dict(range=[-5, 5]),
+        showlegend=False,
+        margin=dict(t=0, b=0, l=10, r=10),
+        plot_bgcolor="#b7c3d1",
+        paper_bgcolor="#e5edef",
+    )
 
-    img = fig.to_image(format='png', width=600, height=350)
+    img = fig.to_image(format="png", width=600, height=350)
 
     return img
 
@@ -184,14 +269,18 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
 @st.cache_data
 def calc_type(type, img_path):
     image = Image.open(img_path)
-    twitter_type = """
+    twitter_type = (
+        """
         <a href="http://twitter.com/intent/tweet" class="twitter-share-button"
-        data-text=" """ + type + """ #あなたの声は何タイプ #VoiceAnalysis"
+        data-text=" """
+        + type
+        + """ #あなたの声は何タイプ #VoiceAnalysis"
         data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
         Tweet
         </a>
         <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
         """
+    )
     return twitter_type, image
 
 
@@ -225,35 +314,35 @@ def _set_block_container_style(
 
 
 def main():
-    st.title('Voice Analysis')
-    st.write('create by Deiko')
+    st.title("Voice Analysis")
+    st.write("create by Deiko")
     st.markdown("---")
-    st.subheader('How to use')
+    st.subheader("How to use")
     col1, col2 = st.columns(2)
-    uploaded_file = col2.file_uploader('＊1秒以上の.wavのみ対応')
+    uploaded_file = col2.file_uploader("＊1秒以上の.wavのみ対応")
 
-    col1.write('①「Browse files」から音声ファイルを読み込む')
-    col1.write('② ピンクのスライドバーで分析範囲を指定する')
-    col1.write('③ グラフや表に分析結果が表示される')
+    col1.write("①「Browse files」から音声ファイルを読み込む")
+    col1.write("② ピンクのスライドバーで分析範囲を指定する")
+    col1.write("③ グラフや表に分析結果が表示される")
     st.markdown("---")
 
     if uploaded_file is not None:
-        if not uploaded_file.name.endswith('.wav'):
-            st.error('このファイルのフォーマットに対応していません！.wavファイルを読み込んでください！', icon='😵')
+        if not uploaded_file.name.endswith(".wav"):
+            st.error("このファイルのフォーマットに対応していません！.wavファイルを読み込んでください！", icon="😵")
         else:
             wav, sr = librosa.load(uploaded_file, sr=None)
             wav_seconds = int(len(wav) / sr)
 
             col2.audio(uploaded_file)
 
-            tgt_ranges = col2.slider(
-                "分析範囲（秒）", 0, wav_seconds, (0, wav_seconds))
+            tgt_ranges = col2.slider("分析範囲（秒）", 0, wav_seconds, (0, wav_seconds))
 
-            wav_element = wav[tgt_ranges[0] * sr:tgt_ranges[1] * sr]
+            wav_element = wav[tgt_ranges[0] * sr : tgt_ranges[1] * sr]
 
             # spec
             ave_fo, s_power, freqs, peaks, odd, even, odd_per, even_per = calc_spec(
-                wav_element, sr)
+                wav_element, sr
+            )
 
             col3, col4 = st.columns(2)
 
@@ -264,10 +353,9 @@ def main():
             col4.image(spectrum_img)
 
             if tgt_ranges == (0, 0):
-                st.error('分析範囲が0秒です！設定から分析範囲を指定し直してください！', icon='😵')
+                st.error("分析範囲が0秒です！設定から分析範囲を指定し直してください！", icon="😵")
             elif odd_per + even_per == 0:
-                st.error(
-                    '倍音が検出できません！設定から分析範囲を指定し直すか、別のファイルを読み込んでください！', icon='😵')
+                st.error("倍音が検出できません！設定から分析範囲を指定し直すか、別のファイルを読み込んでください！", icon="😵")
             else:
                 # hnr
                 hnr = measurePitch(wav_element)
@@ -281,52 +369,59 @@ def main():
                 if hnr > 12:
                     if ave_fo > 165:
                         if odd_per > even_per + 10:
-                            type = 'あなたの声は【元気】、【エネルギー】タイプです！'
-                            img_path = 'images/energy.png'
+                            type = "あなたの声は【元気】、【エネルギー】タイプです！"
+                            img_path = "images/energy.png"
                         else:
-                            type = 'あなたの声は【透明】、【ピュア】タイプです！'
-                            img_path = 'images/pure.png'
+                            type = "あなたの声は【透明】、【ピュア】タイプです！"
+                            img_path = "images/pure.png"
                     else:
                         if odd_per > even_per + 10:
-                            type = 'あなたの声は【勇敢】、【リーダー】タイプです！'
-                            img_path = 'images/leader.png'
+                            type = "あなたの声は【勇敢】、【リーダー】タイプです！"
+                            img_path = "images/leader.png"
                         else:
-                            type = 'あなたの声は【信頼】、【クール】タイプです！'
-                            img_path = 'images/cool.png'
+                            type = "あなたの声は【信頼】、【クール】タイプです！"
+                            img_path = "images/cool.png"
                 else:
                     if ave_fo > 165:
                         if odd_per > even_per + 10:
-                            type = 'あなたの声は【愛嬌】、【フレンド】タイプです！'
-                            img_path = 'images/friend.png'
+                            type = "あなたの声は【愛嬌】、【フレンド】タイプです！"
+                            img_path = "images/friend.png"
                         else:
-                            type = 'あなたの声は【甘い】、【ソフト】タイプです！'
-                            img_path = 'images/soft.png'
+                            type = "あなたの声は【甘い】、【ソフト】タイプです！"
+                            img_path = "images/soft.png"
                     else:
                         if odd_per > even_per + 10:
-                            type = 'あなたの声は【妖艶】、【エレガント】タイプです！'
-                            img_path = 'images/elegant.png'
+                            type = "あなたの声は【妖艶】、【エレガント】タイプです！"
+                            img_path = "images/elegant.png"
                         else:
-                            type = 'あなたの声は【貫禄】、【ジェントル】タイプです！'
-                            img_path = 'images/gentle.png'
+                            type = "あなたの声は【貫禄】、【ジェントル】タイプです！"
+                            img_path = "images/gentle.png"
 
                 twitter_type, image = calc_type(type, img_path)
                 col6.image(image)
                 components.html(twitter_type)
-                df = pd.DataFrame({"ファイル名": [uploaded_file.name],
-                                   "基本周波数（Hz）": [ave_fo],
-                                   "HNR（dB）": [hnr],
-                                   "奇数倍音（％）": [odd_per],
-                                   "偶数倍音（％）": [even_per]}
-                                  )
+                df = pd.DataFrame(
+                    {
+                        "ファイル名": [uploaded_file.name],
+                        "基本周波数（Hz）": [ave_fo],
+                        "HNR（dB）": [hnr],
+                        "奇数倍音（％）": [odd_per],
+                        "偶数倍音（％）": [even_per],
+                    }
+                )
                 st.dataframe(df)
 
                 csv = df.to_csv(index=False)
                 b64 = base64.b64encode(csv.encode()).decode()
                 href = f'<a href="data:application/octet-stream;base64,{b64}" download="result.csv">Download</a>'
                 st.markdown(
-                    f'<span style="font-size:16px">csvファイルでダウンロード {href}</span>', unsafe_allow_html=True)
+                    f'<span style="font-size:16px">csvファイルでダウンロード {href}</span>',
+                    unsafe_allow_html=True,
+                )
                 st.markdown(
-                    f'<span style="font-size:16px">基本周波数とHNRは平均で計算しています。</span>', unsafe_allow_html=True)
+                    f'<span style="font-size:16px">基本周波数とHNRは平均で計算しています。</span>',
+                    unsafe_allow_html=True,
+                )
 
 
 if __name__ == "__main__":
