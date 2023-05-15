@@ -10,6 +10,9 @@ import base64
 import parselmouth
 from parselmouth.praat import call
 from PIL import Image
+import tempfile
+import soundfile as sf
+from pysndfx import AudioEffectsChain
 
 HOP = 1000
 GRAPH_WIDTH = 1200
@@ -35,20 +38,19 @@ def measurePitch(wav):
     hnr = call(harmonicity, "Get mean", 0, 0)
     return hnr
 
-
 @st.cache_data
 def calc_spec(wav, sr):
     fo, voiced_flag, voiced_prob = librosa.pyin(
-        wav, fmin=80, fmax=500)
-    
+        wav, fmin=75, fmax=500)
+
     ave_fo = np.average(fo[voiced_flag])
 
     spectrum = np.abs(np.fft.fft(wav, sr)[: int(sr / 2)])
     freqs = np.fft.fftfreq(sr, d=1.0 / sr)[: int(sr / 2)]
-    s_power = np.abs(spectrum)
+    s_power = np.abs(spectrum) ** 2
 
-    peaks = signal.argrelmax(s_power, order=80)[0]
-    peaks = peaks[(peaks >= ave_fo)]
+    peaks = signal.argrelmax(s_power, order=60)[0]
+    peaks = peaks[(peaks >= 70)]
 
     odd = sum(s_power[peaks[1::2]])
     even = sum(s_power[peaks[2::2]])
@@ -283,6 +285,32 @@ def calc_type(type, img_path):
     )
     return twitter_type, image
 
+@st.cache_data
+def get_binary_file_downloader_html(bin_file, file_label='File', extension=""):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    bin_str = base64.b64encode(data).decode()
+    href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{file_label}_eq.wav">Download</a>'
+    return href
+
+@st.cache_data
+def eq_recommended(wav,ave_fo,peaks,eq_gain):
+    eq1_peaks = peaks[(peaks >= 1500) & (peaks <= 3000)]
+    eq2_peaks = peaks[(peaks >= 400) & (peaks <= 500)]
+
+    if len(eq1_peaks) == 0:
+        eq1 = 2500
+    else:
+        eq1 = np.median(eq1_peaks)
+
+    if len(eq2_peaks) == 0:
+        eq2 = 450
+    else:
+        eq2 = np.median(eq2_peaks)
+
+    fx = AudioEffectsChain().highpass(ave_fo, q=1/np.sqrt(2)).equalizer(eq1, q=0.46, db=eq_gain).equalizer(eq2, q=4, db=eq_gain*-1)
+    eq_wav = fx(wav)
+    return eq_wav
 
 def _set_block_container_style(
     max_width: int = GRAPH_WIDTH + 100,
@@ -333,7 +361,7 @@ def main():
             wav, sr = librosa.load(uploaded_file, sr=None)
             wav_seconds = int(len(wav) / sr)
 
-            col2.audio(uploaded_file)
+            col2.audio(wav,sample_rate=sr)
 
             tgt_ranges = col2.slider("分析範囲（秒）", 0, wav_seconds, (0, wav_seconds))
 
@@ -399,7 +427,6 @@ def main():
 
                 twitter_type, image = calc_type(type, img_path)
                 col6.image(image)
-                components.html(twitter_type)
                 df = pd.DataFrame(
                     {
                         "ファイル名": [uploaded_file.name],
@@ -411,17 +438,37 @@ def main():
                 )
                 st.dataframe(df)
 
+                filename = uploaded_file.name.removesuffix('.wav')
                 csv = df.to_csv(index=False)
                 b64 = base64.b64encode(csv.encode()).decode()
-                href = f'<a href="data:application/octet-stream;base64,{b64}" download="result.csv">Download</a>'
+                href = f'<a href="data:application/octet-stream;base64,{b64}" download="{filename}.csv">Download</a>'
                 st.markdown(
-                    f'<span style="font-size:16px">csvファイルでダウンロード {href}</span>',
+                    f'<span style="font-size:16px">csvファイルでダウンロード▶︎ {href}</span>',
                     unsafe_allow_html=True,
                 )
                 st.markdown(
                     f'<span style="font-size:16px">基本周波数とHNRは平均で計算しています。</span>',
                     unsafe_allow_html=True,
                 )
+
+                st.markdown("---")
+                st.subheader("Recommended EQ")
+                st.write("分析結果を元におすすめのEQを提案します！")
+                eq_gain = st.slider("Clarity EQパラメーター）", 0, 5, 0)
+                col7, col8 = st.columns(2)
+
+                eq_wav = eq_recommended(wav,ave_fo,peaks,eq_gain)
+
+                fp = tempfile.NamedTemporaryFile()
+                sf.write(fp.name, eq_wav, sr, format="wav",subtype="PCM_24")
+                href2 = get_binary_file_downloader_html(fp.name, filename, ".wav")
+                col7.write("[Before]")
+                col7.audio(wav,sample_rate=sr)
+                col8.write("[After]")
+                col8.audio(eq_wav,sample_rate=sr)
+
+                col8.markdown(f'<span style="font-size:16px">wavファイルでダウンロード▶︎ {href2}</span>', unsafe_allow_html=True)
+                components.html(twitter_type)
 
 
 if __name__ == "__main__":
