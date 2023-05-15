@@ -24,8 +24,8 @@ st.set_page_config(
         "Get Help": "https://twitter.com/deiko_cs",
         "Report a bug": "https://twitter.com/deiko_cs",
         "About": """
-         # 声を分析するWebアプリ
-         このWebアプリはアップロードした音声を分析することができます。周波数スペクトルや声の特徴、声のタイプを表示します。
+         # 声を分析してEQを提案するWebアプリ
+         このWebアプリはアップロードした音声を分析することができます。周波数スペクトルや声の特徴、声のタイプを表示します。また、EQを提案して加工した音声をダウンロードできます。
          """,
     },
 )
@@ -274,9 +274,7 @@ def calc_type(type, img_path):
     twitter_type = (
         """
         <a href="http://twitter.com/intent/tweet" class="twitter-share-button"
-        data-text=" """
-        + type
-        + """ #あなたの声は何タイプ #VoiceAnalysis"
+        data-text="#レコメンドEQ #VoiceAnalysis"
         data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
         Tweet
         </a>
@@ -454,7 +452,7 @@ def main():
                 st.markdown("---")
                 st.subheader("Recommended EQ")
                 st.write("分析結果を元におすすめのEQを提案します！")
-                eq_gain = st.slider("声を明瞭にするEQの適用度", 0, 5, 0)
+                eq_gain = st.slider("レコメンドEQの適用度", 0, 5, 0)
                 col7, col8 = st.columns(2)
 
                 eq_wav = eq_recommended(wav,ave_fo,peaks,eq_gain)
