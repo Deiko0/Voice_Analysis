@@ -454,7 +454,7 @@ def main():
                 st.markdown("---")
                 st.subheader("Recommended EQ")
                 st.write("分析結果を元におすすめのEQを提案します！")
-                eq_gain = st.slider("Clarity EQパラメーター）", 0, 5, 0)
+                eq_gain = st.slider("声を明瞭にするEQの適用度", 0, 5, 0)
                 col7, col8 = st.columns(2)
 
                 eq_wav = eq_recommended(wav,ave_fo,peaks,eq_gain)
