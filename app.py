@@ -38,6 +38,7 @@ def measurePitch(wav):
     hnr = call(harmonicity, "Get mean", 0, 0)
     return hnr
 
+
 @st.cache_data
 def calc_spec(wav, sr):
     fo, voiced_flag, voiced_prob = librosa.pyin(
@@ -68,7 +69,8 @@ def calc_spec(wav, sr):
 @st.cache_data
 def draw_wave(wav, tgt_ranges, sr, wav_seconds):
     fig = go.Figure()
-    fig.add_trace(go.Scatter(y=wav[::HOP], mode="lines", line=dict(color="#2584c1")))
+    fig.add_trace(go.Scatter(
+        y=wav[::HOP], mode="lines", line=dict(color="#2584c1")))
     fig.add_vrect(
         x0=int(tgt_ranges[0] * sr / HOP),
         x1=int(tgt_ranges[1] * sr / HOP),
@@ -103,7 +105,8 @@ def draw_wave(wav, tgt_ranges, sr, wav_seconds):
 def draw_spectrum(freqs, s_power, peaks):
     fig = go.Figure()
     fig.add_trace(
-        go.Scatter(x=freqs, y=s_power, mode="lines", line=dict(color="#2584c1"))
+        go.Scatter(x=freqs, y=s_power, mode="lines",
+                   line=dict(color="#2584c1"))
     )
     fig.add_trace(
         go.Scatter(
@@ -219,12 +222,14 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
     )
 
     fig.append_trace(
-        go.Funnel(y=[""], x=[even_per], textinfo="text", marker=dict(color="#2584c1")),
+        go.Funnel(y=[""], x=[even_per], textinfo="text",
+                  marker=dict(color="#2584c1")),
         row=3,
         col=1,
     )
     fig.append_trace(
-        go.Funnel(y=[""], x=[odd_per], textinfo="text", marker=dict(color="#e3619f")),
+        go.Funnel(y=[""], x=[odd_per], textinfo="text",
+                  marker=dict(color="#e3619f")),
         row=3,
         col=1,
     )
@@ -283,6 +288,7 @@ def calc_type(img_path):
     )
     return twitter, image
 
+
 @st.cache_data
 def get_binary_file_downloader_html(bin_file, file_label='File', extension=""):
     with open(bin_file, 'rb') as f:
@@ -291,8 +297,9 @@ def get_binary_file_downloader_html(bin_file, file_label='File', extension=""):
     href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{file_label}_eq.wav">Download</a>'
     return href
 
+
 @st.cache_data
-def eq_recommended(wav,ave_fo,peaks,eq_gain):
+def eq_recommended(filename, wav, sr, ave_fo, peaks, eq_gain):
     eq2_peaks = peaks[(peaks >= 1500) & (peaks <= 3000)]
     eq1_peaks = peaks[(peaks >= 400) & (peaks <= 500)]
 
@@ -308,9 +315,16 @@ def eq_recommended(wav,ave_fo,peaks,eq_gain):
 
     low = int(ave_fo-5)
 
-    fx = AudioEffectsChain().highpass(low, q=1/np.sqrt(2)).equalizer(eq1, q=4.0, db=eq_gain*-1).equalizer(eq2, q=0.46, db=eq_gain)
+    fx = AudioEffectsChain().highpass(low, q=1/np.sqrt(2)).equalizer(eq1, q=4.0,
+                                                                     db=eq_gain*-1).equalizer(eq2, q=0.46, db=eq_gain)
     eq_wav = fx(wav)
-    return eq_wav,low,eq1,eq2
+
+    fp = tempfile.NamedTemporaryFile()
+    sf.write(fp.name, eq_wav, sr, format="wav", subtype="PCM_24")
+    href2 = get_binary_file_downloader_html(fp.name, filename, ".wav")
+
+    return eq_wav, low, eq1, eq2, href2
+
 
 def _set_block_container_style(
     max_width: int = GRAPH_WIDTH + 100,
@@ -361,11 +375,12 @@ def main():
             wav, sr = librosa.load(uploaded_file, sr=None)
             wav_seconds = int(len(wav) / sr)
 
-            col2.audio(wav,sample_rate=sr)
+            col2.audio(wav, sample_rate=sr)
 
-            tgt_ranges = col2.slider("分析範囲（秒）", 0, wav_seconds, (0, wav_seconds))
+            tgt_ranges = col2.slider(
+                "分析範囲（秒）", 0, wav_seconds, (0, wav_seconds))
 
-            wav_element = wav[tgt_ranges[0] * sr : tgt_ranges[1] * sr]
+            wav_element = wav[tgt_ranges[0] * sr: tgt_ranges[1] * sr]
 
             # spec
             ave_fo, s_power, freqs, peaks, odd, even, odd_per, even_per = calc_spec(
@@ -425,7 +440,7 @@ def main():
                             type = "あなたの声は【貫禄】、【ジェントル】タイプです！"
                             img_path = "images/gentle.png"
 
-                twitter,image = calc_type(img_path)
+                twitter, image = calc_type(img_path)
                 col6.image(image)
                 df = pd.DataFrame(
                     {
@@ -455,26 +470,26 @@ def main():
                 st.subheader("Recommended EQ")
                 st.write("分析結果を元におすすめのEQを提案します！")
                 eq_gain = st.slider("レコメンドEQのGain適用度", 1, 5, 1)
-                eq_wav,low,eq1,eq2 = eq_recommended(wav,ave_fo,peaks,eq_gain)
+                eq_wav, low, eq1, eq2, href2 = eq_recommended(
+                    filename, wav, sr, ave_fo, peaks, eq_gain)
                 eq_df = pd.DataFrame(
-                    data=np.array([['', 'Peaking', 'Peaking'],[low, eq1, eq2],['12dB/oct', 4.0, 0.46],['', eq_gain*-1, eq_gain]]),
-                    index=['タイプ', '周波数（Hz）', 'Q','Gain（dB）'],
-                    columns=['High Pass Filter', 'Low Mid Frequency', 'High Mid Frequency']
+                    data=np.array([['', 'Peaking', 'Peaking'], [low, eq1, eq2], [
+                                  '12dB/oct', 4.0, 0.46], ['', eq_gain*-1, eq_gain]]),
+                    index=['タイプ', '周波数（Hz）', 'Q', 'Gain（dB）'],
+                    columns=['High Pass Filter',
+                             'Low Mid Frequency', 'High Mid Frequency']
                 )
                 st.dataframe(eq_df)
 
-
                 col7, col8 = st.columns(2)
 
-                fp = tempfile.NamedTemporaryFile()
-                sf.write(fp.name, eq_wav, sr, format="wav",subtype="PCM_24")
-                href2 = get_binary_file_downloader_html(fp.name, filename, ".wav")
                 col7.write("[Before]")
-                col7.audio(wav,sample_rate=sr)
+                col7.audio(wav, sample_rate=sr)
                 col8.write("[After]")
-                col8.audio(eq_wav,sample_rate=sr)
+                col8.audio(eq_wav, sample_rate=sr)
 
-                col8.markdown(f'<span style="font-size:16px">wavファイルでダウンロード▶︎ {href2}</span>', unsafe_allow_html=True)
+                col8.markdown(
+                    f'<span style="font-size:16px">wavファイルでダウンロード▶︎ {href2}</span>', unsafe_allow_html=True)
                 components.html(twitter)
 
 
