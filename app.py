@@ -269,9 +269,9 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
 
 
 @st.cache_data
-def calc_type(type, img_path):
+def calc_type(img_path):
     image = Image.open(img_path)
-    twitter_type = (
+    twitter = (
         """
         <a href="http://twitter.com/intent/tweet" class="twitter-share-button"
         data-text="#レコメンドEQ #VoiceAnalysis"
@@ -281,7 +281,7 @@ def calc_type(type, img_path):
         <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
         """
     )
-    return twitter_type, image
+    return twitter, image
 
 @st.cache_data
 def get_binary_file_downloader_html(bin_file, file_label='File', extension=""):
@@ -293,22 +293,24 @@ def get_binary_file_downloader_html(bin_file, file_label='File', extension=""):
 
 @st.cache_data
 def eq_recommended(wav,ave_fo,peaks,eq_gain):
-    eq1_peaks = peaks[(peaks >= 1500) & (peaks <= 3000)]
-    eq2_peaks = peaks[(peaks >= 400) & (peaks <= 500)]
-
-    if len(eq1_peaks) == 0:
-        eq1 = 2500
-    else:
-        eq1 = np.median(eq1_peaks)
+    eq2_peaks = peaks[(peaks >= 1500) & (peaks <= 3000)]
+    eq1_peaks = peaks[(peaks >= 400) & (peaks <= 500)]
 
     if len(eq2_peaks) == 0:
-        eq2 = 450
+        eq2 = 2500
     else:
-        eq2 = np.median(eq2_peaks)
+        eq2 = int(np.median(eq2_peaks))
 
-    fx = AudioEffectsChain().highpass(ave_fo, q=1/np.sqrt(2)).equalizer(eq1, q=0.46, db=eq_gain).equalizer(eq2, q=4, db=eq_gain*-1)
+    if len(eq1_peaks) == 0:
+        eq1 = 450
+    else:
+        eq1 = int(np.median(eq1_peaks))
+
+    low = int(ave_fo-5)
+
+    fx = AudioEffectsChain().highpass(low, q=1/np.sqrt(2)).equalizer(eq1, q=4.0, db=eq_gain*-1).equalizer(eq2, q=0.46, db=eq_gain)
     eq_wav = fx(wav)
-    return eq_wav
+    return eq_wav,low,eq1,eq2
 
 def _set_block_container_style(
     max_width: int = GRAPH_WIDTH + 100,
@@ -423,7 +425,7 @@ def main():
                             type = "あなたの声は【貫禄】、【ジェントル】タイプです！"
                             img_path = "images/gentle.png"
 
-                twitter_type, image = calc_type(type, img_path)
+                twitter,image = calc_type(img_path)
                 col6.image(image)
                 df = pd.DataFrame(
                     {
@@ -431,7 +433,7 @@ def main():
                         "基本周波数（Hz）": [ave_fo],
                         "HNR（dB）": [hnr],
                         "奇数倍音（％）": [odd_per],
-                        "偶数倍音（％）": [even_per],
+                        "偶数倍音（％）": [even_per]
                     }
                 )
                 st.dataframe(df)
@@ -452,10 +454,17 @@ def main():
                 st.markdown("---")
                 st.subheader("Recommended EQ")
                 st.write("分析結果を元におすすめのEQを提案します！")
-                eq_gain = st.slider("レコメンドEQの適用度", 0, 5, 0)
-                col7, col8 = st.columns(2)
+                eq_gain = st.slider("レコメンドEQのGain適用度", 1, 5, 1)
+                eq_wav,low,eq1,eq2 = eq_recommended(wav,ave_fo,peaks,eq_gain)
+                eq_df = pd.DataFrame(
+                    data=np.array([['', 'Peaking', 'Peaking'],[low, eq1, eq2],['12dB/oct', 4.0, 0.46],['', eq_gain*-1, eq_gain]]),
+                    index=['タイプ', '周波数（Hz）', 'Q','Gain（dB）'],
+                    columns=['High Pass Filter', 'Low Mid Frequency', 'High Mid Frequency']
+                )
+                st.dataframe(eq_df)
 
-                eq_wav = eq_recommended(wav,ave_fo,peaks,eq_gain)
+
+                col7, col8 = st.columns(2)
 
                 fp = tempfile.NamedTemporaryFile()
                 sf.write(fp.name, eq_wav, sr, format="wav",subtype="PCM_24")
@@ -466,7 +475,7 @@ def main():
                 col8.audio(eq_wav,sample_rate=sr)
 
                 col8.markdown(f'<span style="font-size:16px">wavファイルでダウンロード▶︎ {href2}</span>', unsafe_allow_html=True)
-                components.html(twitter_type)
+                components.html(twitter)
 
 
 if __name__ == "__main__":
