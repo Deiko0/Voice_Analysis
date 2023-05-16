@@ -468,7 +468,7 @@ def main():
 
                 st.markdown("---")
                 st.subheader("Recommended EQ")
-                st.write("分析結果を元におすすめのEQを提案します！")
+                st.write("分析結果を元におすすめの音声EQを提案します！（ナレーション向け）")
                 eq_gain = st.slider("レコメンドEQのGain適用度", 1, 5, 1)
                 eq_wav, low, eq1, eq2, href2 = eq_recommended(
                     filename, wav, sr, ave_fo, peaks, eq_gain)
