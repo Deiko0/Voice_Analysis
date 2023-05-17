@@ -33,6 +33,8 @@ st.set_page_config(
 
 @st.cache_data
 def make_divisors(n):
+    fmin = 70
+    fmax = 300
     lower_divisors , upper_divisors = [], []
     i = 1
     while i*i <= n:
