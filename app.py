@@ -452,7 +452,7 @@ def main():
                 col5.image(result_img)
 
                 if hnr > 14:
-                    if ave_fo > 165:
+                    if ave_fo > 150:
                         if odd_per > even_per + 10:
                             type = "あなたの声は【元気】、【エネルギー】タイプです！"
                             img_path = "images/energy.png"
@@ -467,7 +467,7 @@ def main():
                             type = "あなたの声は【信頼】、【クール】タイプです！"
                             img_path = "images/cool.png"
                 else:
-                    if ave_fo > 165:
+                    if ave_fo > 150:
                         if odd_per > even_per + 10:
                             type = "あなたの声は【愛嬌】、【フレンド】タイプです！"
                             img_path = "images/friend.png"
