@@ -34,7 +34,7 @@ st.set_page_config(
 def measurePitch(wav):
     sound = parselmouth.Sound(wav)
     harmonicity = call(sound, "To Harmonicity (cc)", 0.01, 75, 0.1, 1.0)
-    hnr = int(call(harmonicity, "Get mean", 0, 0))
+    hnr = call(harmonicity, "Get mean", 0, 0)
     return hnr
 
 
