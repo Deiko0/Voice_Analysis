@@ -53,8 +53,8 @@ def calc_spec(wav, sr):
     peaks = signal.argrelmax(s_power, order=60)[0]
     peaks = peaks[(peaks >= 70)]
 
-    odd = sum(s_power[peaks[1::2]])
-    even = sum(s_power[peaks[2::2]])
+    even = sum(s_power[peaks[1::2]])
+    odd = sum(s_power[peaks[2::2]])
     if odd + even == 0:
         odd_per = 0
         even_per = 0
