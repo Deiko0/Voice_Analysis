@@ -13,6 +13,7 @@ from PIL import Image
 import tempfile
 import soundfile as sf
 from pysndfx import AudioEffectsChain
+import itertools
 
 HOP = 1000
 GRAPH_WIDTH = 1200
