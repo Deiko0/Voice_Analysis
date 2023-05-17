@@ -62,8 +62,7 @@ def calc_spec(wav, sr):
     freqs = np.fft.fftfreq(sr, d=1.0 / sr)[: int(sr / 2)]
     s_power = np.abs(spectrum) ** 2
 
-    peaks = signal.argrelmax(s_power, order=60)[0]
-    peaks = peaks[(peaks >= 70)]
+    peaks = signal.argrelmax(pow, order=fmin)[0]
     
     list_original = [i for i in peaks if (i <= fmax) and (i >= fmin)]
     div_list = list_original
