@@ -1,18 +1,18 @@
 import streamlit as st
 import streamlit.components.v1 as components
-import librosa
 import numpy as np
 from scipy import signal
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from PIL import Image
 import pandas as pd
 import base64
+import librosa
 import parselmouth
 from parselmouth.praat import call
-from PIL import Image
-import tempfile
-import soundfile as sf
 from pysndfx import AudioEffectsChain
+import soundfile as sf
+import tempfile
 
 HOP = 1000
 GRAPH_WIDTH = 1200
@@ -44,13 +44,12 @@ def calc_spec(wav, sr):
         wav, fmin=75, fmax=500)
 
     ave_fo = np.average(fo[voiced_flag])
-    
+
     spectrum = np.abs(np.fft.fft(wav, sr)[: int(sr / 2)])
     freqs = np.fft.fftfreq(sr, d=1.0 / sr)[: int(sr / 2)]
     s_power = np.abs(spectrum) ** 2
 
     peaks = signal.argrelmax(s_power, order=70)[0]
-    
 
     even = sum(s_power[peaks[1::2]])
     odd = sum(s_power[peaks[2::2]])
@@ -137,7 +136,7 @@ def draw_spectrum(freqs, s_power, peaks):
 
 
 @st.cache_data
-def draw_result(ave_fo, hnr, even_per, odd_per):
+def draw_result(filename,ave_fo, hnr, even_per, odd_per):
     fig = make_subplots(rows=3, cols=1)
 
     clip_ave_fo = np.clip(ave_fo, 70, 230)
@@ -269,23 +268,58 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
 
     img = fig.to_image(format="png", width=600, height=350)
 
-    return img
+    if hnr > 13:
+        if ave_fo > 150:
+            type1 = 'High'
+            if odd_per > even_per + 10:
+                type2 = 'odd'
+                img_path = "images/energy.png"
+            else:
+                type2 = 'even'
+                img_path = "images/pure.png"
+        else:
+            type1 = 'Low'
+            if odd_per > even_per + 10:
+                type2 = 'odd'
+                img_path = "images/leader.png"
+            else:
+                type2 = 'even'
+                img_path = "images/cool.png"
+    else:
+        if ave_fo > 150:
+            type1 = 'High'
+            if odd_per > even_per + 10:
+                type2 = 'odd'
+                img_path = "images/friend.png"
+            else:
+                type2 = 'even'
+                img_path = "images/soft.png"
+        else:
+            type1 = 'Low'
+            if odd_per > even_per + 10:
+                type2 = 'odd'
+                img_path = "images/elegant.png"
+            else:
+                type2 = 'even'
+                img_path = "images/gentle.png"
 
+    img_type = Image.open(img_path)
 
-@st.cache_data
-def calc_type(img_path):
-    image = Image.open(img_path)
-    twitter = (
-        """
-        <a href="http://twitter.com/intent/tweet" class="twitter-share-button"
-        data-text="#レコメンドEQ #VoiceAnalysis"
-        data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
-        Tweet
-        </a>
-        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-        """
+    df = pd.DataFrame(
+        {
+            "ファイル名": [filename],
+            "基本周波数（Hz）": [ave_fo],
+            "HNR（dB）": [hnr],
+            "奇数倍音（％）": [odd_per],
+            "偶数倍音（％）": [even_per]
+        }
     )
-    return twitter, image
+
+    csv = df.to_csv(index=False)
+    b64 = base64.b64encode(csv.encode()).decode()
+    href = f'<a href="data:application/octet-stream;base64,{b64}" download="{filename}.csv">Download</a>'
+
+    return img,img_type,df,href,type1,type2
 
 
 @st.cache_data
@@ -298,31 +332,57 @@ def get_binary_file_downloader_html(bin_file, file_label='File', extension=""):
 
 
 @st.cache_data
-def eq_recommended(filename, wav, sr, ave_fo, peaks, eq_gain):
-    eq2_peaks = peaks[(peaks >= 1500) & (peaks <= 3000)]
-    eq1_peaks = peaks[(peaks >= 400) & (peaks <= 500)]
-
-    if len(eq2_peaks) == 0:
-        eq2 = 2500
-    else:
-        eq2 = int(np.median(eq2_peaks))
-
-    if len(eq1_peaks) == 0:
-        eq1 = 450
-    else:
-        eq1 = int(np.median(eq1_peaks))
-
+def eq_recommended(filename, wav, sr, ave_fo, peaks, eq_gain,type1,type2):
     low = int(ave_fo-5)
 
-    fx = AudioEffectsChain().highpass(low, q=1/np.sqrt(2)).equalizer(eq1, q=4.0,
-                                                                     db=eq_gain*-1).equalizer(eq2, q=0.46, db=eq_gain)
+    if type1 == 'High':
+        eq2_peaks = peaks[(peaks >= 2000) & (peaks <= 3000)]
+        eq_gain2 = eq_gain*-1
+        q2 = 4.0
+        if len(eq2_peaks) == 0:
+            eq2 = 2500
+        else:
+            eq2 = int(np.median(eq2_peaks))
+    else:
+        eq2_peaks = peaks[(peaks >= 1500) & (peaks <= 3000)]
+        eq_gain2 = eq_gain
+        q2 = 0.46
+        if len(eq2_peaks) == 0:
+            eq2 = 2500
+        else:
+            eq2 = int(np.median(eq2_peaks))
+
+    if type2 == 'odd':
+        eq1_peaks = peaks[(peaks >= 100) & (peaks <= 300)]
+        eq_gain1 = eq_gain
+        q1 = 1.2
+        if len(eq1_peaks) == 0:
+            eq1 = 250
+        else:
+            eq1 = int(np.median(eq1_peaks))
+    else:
+        eq1_peaks = peaks[(peaks >= 400) & (peaks <= 500)]
+        eq_gain1 = eq_gain*-1
+        q1 = 4.0
+        if len(eq1_peaks) == 0:
+            eq1 = 450
+        else:
+            eq1 = int(np.median(eq1_peaks))
+
+    fx = AudioEffectsChain().highpass(low, q=1/np.sqrt(2)).equalizer(eq1, q=q1,db=eq_gain1).equalizer(eq2, q=q2, db=eq_gain2)
     eq_wav = fx(wav)
 
     fp = tempfile.NamedTemporaryFile()
     sf.write(fp.name, eq_wav, sr, format="wav", subtype="PCM_24")
     href2 = get_binary_file_downloader_html(fp.name, filename, ".wav")
 
-    return eq_wav, low, eq1, eq2, href2
+    eq_df = pd.DataFrame(
+        data=np.array([['', 'Peaking', 'Peaking'], [low, eq1, eq2], ['12dB/oct', q1, q2], ['', eq_gain1, eq_gain2]]),
+        index=['タイプ', '周波数（Hz）', 'Q', 'Gain（dB）'],
+        columns=['High Pass Filter','Low Mid Frequency', 'High Mid Frequency']
+    )
+
+    return eq_wav, href2, eq_df
 
 
 def _set_block_container_style(
@@ -358,6 +418,7 @@ def main():
     st.title("Voice Analysis")
     st.write("create by Deiko")
     st.markdown("---")
+
     st.subheader("How to use")
     col1, col2 = st.columns(2)
     uploaded_file = col2.file_uploader("＊1秒以上の.wavのみ対応")
@@ -373,24 +434,14 @@ def main():
         else:
             wav, sr = librosa.load(uploaded_file, sr=None)
             wav_seconds = int(len(wav) / sr)
-
             col2.audio(wav, sample_rate=sr)
-
-            tgt_ranges = col2.slider(
-                "分析範囲（秒）", 0, wav_seconds, (0, wav_seconds))
-
+            tgt_ranges = col2.slider("分析範囲（秒）", 0, wav_seconds, (0, wav_seconds))
             wav_element = wav[tgt_ranges[0] * sr: tgt_ranges[1] * sr]
 
-            # spec
-            ave_fo, s_power, freqs, peaks, odd, even, odd_per, even_per = calc_spec(
-                wav_element, sr
-            )
-
             col3, col4 = st.columns(2)
-
+            ave_fo, s_power, freqs, peaks, odd, even, odd_per, even_per = calc_spec(wav_element, sr)
             wave_img = draw_wave(wav, tgt_ranges, sr, wav_seconds)
             col3.image(wave_img)
-
             spectrum_img = draw_spectrum(freqs, s_power, peaks)
             col4.image(spectrum_img)
 
@@ -399,63 +450,14 @@ def main():
             elif odd_per + even_per == 0:
                 st.error("倍音が検出できません！設定から分析範囲を指定し直すか、別のファイルを読み込んでください！", icon="😵")
             else:
-                # hnr
                 hnr = measurePitch(wav_element)
 
                 st.header("Result")
                 col5, col6 = st.columns(2)
-
-                result_img = draw_result(ave_fo, hnr, even_per, odd_per)
+                result_img,img_type,df,href,type1,type2 = draw_result(uploaded_file.name,ave_fo, hnr, even_per, odd_per)
                 col5.image(result_img)
-
-                if hnr > 13:
-                    if ave_fo > 150:
-                        if odd_per > even_per + 10:
-                            type = "あなたの声は【元気】、【エネルギー】タイプです！"
-                            img_path = "images/energy.png"
-                        else:
-                            type = "あなたの声は【透明】、【ピュア】タイプです！"
-                            img_path = "images/pure.png"
-                    else:
-                        if odd_per > even_per + 10:
-                            type = "あなたの声は【勇敢】、【リーダー】タイプです！"
-                            img_path = "images/leader.png"
-                        else:
-                            type = "あなたの声は【信頼】、【クール】タイプです！"
-                            img_path = "images/cool.png"
-                else:
-                    if ave_fo > 150:
-                        if odd_per > even_per + 10:
-                            type = "あなたの声は【愛嬌】、【フレンド】タイプです！"
-                            img_path = "images/friend.png"
-                        else:
-                            type = "あなたの声は【甘い】、【ソフト】タイプです！"
-                            img_path = "images/soft.png"
-                    else:
-                        if odd_per > even_per + 10:
-                            type = "あなたの声は【妖艶】、【エレガント】タイプです！"
-                            img_path = "images/elegant.png"
-                        else:
-                            type = "あなたの声は【貫禄】、【ジェントル】タイプです！"
-                            img_path = "images/gentle.png"
-
-                twitter, image = calc_type(img_path)
-                col6.image(image)
-                df = pd.DataFrame(
-                    {
-                        "ファイル名": [uploaded_file.name],
-                        "基本周波数（Hz）": [ave_fo],
-                        "HNR（dB）": [hnr],
-                        "奇数倍音（％）": [odd_per],
-                        "偶数倍音（％）": [even_per]
-                    }
-                )
+                col6.image(img_type)
                 st.dataframe(df)
-
-                filename = uploaded_file.name.removesuffix('.wav')
-                csv = df.to_csv(index=False)
-                b64 = base64.b64encode(csv.encode()).decode()
-                href = f'<a href="data:application/octet-stream;base64,{b64}" download="{filename}.csv">Download</a>'
                 st.markdown(
                     f'<span style="font-size:16px">csvファイルでダウンロード▶︎ {href}</span>',
                     unsafe_allow_html=True,
@@ -464,32 +466,29 @@ def main():
                     f'<span style="font-size:16px">基本周波数とHNRは平均で計算しています。</span>',
                     unsafe_allow_html=True,
                 )
-
                 st.markdown("---")
+
                 st.subheader("Recommended EQ")
-                st.write("分析結果を元におすすめの音声EQを提案します！（ナレーション向け）")
+                st.write("分析結果を元におすすめの音声EQを提案します！")
                 eq_gain = st.slider("レコメンドEQのGain適用度", 1, 5, 1)
-                eq_wav, low, eq1, eq2, href2 = eq_recommended(
-                    filename, wav, sr, ave_fo, peaks, eq_gain)
-                eq_df = pd.DataFrame(
-                    data=np.array([['', 'Peaking', 'Peaking'], [low, eq1, eq2], [
-                                  '12dB/oct', 4.0, 0.46], ['', eq_gain*-1, eq_gain]]),
-                    index=['タイプ', '周波数（Hz）', 'Q', 'Gain（dB）'],
-                    columns=['High Pass Filter',
-                             'Low Mid Frequency', 'High Mid Frequency']
-                )
+                eq_wav, href2,eq_df = eq_recommended(uploaded_file.name.removesuffix('.wav'), wav, sr, ave_fo, peaks, eq_gain,type1,type2)
                 st.dataframe(eq_df)
 
                 col7, col8 = st.columns(2)
-
                 col7.write("[Before]")
                 col7.audio(wav, sample_rate=sr)
                 col8.write("[After]")
                 col8.audio(eq_wav, sample_rate=sr)
-
                 col8.markdown(
                     f'<span style="font-size:16px">wavファイルでダウンロード▶︎ {href2}</span>', unsafe_allow_html=True)
-                components.html(twitter)
+                components.html(
+                    """<a href="http://twitter.com/intent/tweet" class="twitter-share-button"
+                    data-text="#レコメンドEQ #VoiceAnalysis"
+                    data-url="https://deiko0-voice-analysis-app-m0fgp5.streamlit.app"
+                    Tweet
+                    </a>
+                    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                    """)
 
 
 if __name__ == "__main__":
