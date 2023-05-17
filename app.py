@@ -13,7 +13,6 @@ from PIL import Image
 import tempfile
 import soundfile as sf
 from pysndfx import AudioEffectsChain
-import itertools
 
 HOP = 1000
 GRAPH_WIDTH = 1200
@@ -32,20 +31,6 @@ st.set_page_config(
 )
 
 @st.cache_data
-def make_divisors(n):
-    lower_divisors , upper_divisors = [], []
-    i = 1
-    while i*i <= n:
-        if n % i == 0:
-            lower_divisors.append(i)
-            if i != n // i:
-                upper_divisors.append(n//i)
-        i += 1
-    ud = [i for i in upper_divisors if (i <= 300) and (i >= 70)]
-    ld = [i for i in lower_divisors if (i <= 300) and (i >= 70)]
-    return ld + ud[::-1]
-
-@st.cache_data
 def measurePitch(wav):
     sound = parselmouth.Sound(wav)
     harmonicity = call(sound, "To Harmonicity (cc)", 0.01, 75, 0.1, 1.0)
@@ -55,53 +40,29 @@ def measurePitch(wav):
 
 @st.cache_data
 def calc_spec(wav, sr):
+    fo, voiced_flag, voiced_prob = librosa.pyin(
+        wav, fmin=75, fmax=500)
+
+    ave_fo = np.average(fo[voiced_flag])
+    
     spectrum = np.abs(np.fft.fft(wav, sr)[: int(sr / 2)])
     freqs = np.fft.fftfreq(sr, d=1.0 / sr)[: int(sr / 2)]
     s_power = np.abs(spectrum) ** 2
 
     peaks = signal.argrelmax(s_power, order=70)[0]
     
-    list_original = [i for i in peaks if (i <= 300) and (i >= 70)]
-    div_list = list_original
-    comb_list = []
-    and_list = set()
-    c = 0
-    fmax = 300
-    
-    while len(and_list) == 0:
-        for comb in itertools.combinations(div_list,2):
-            comb_list.append(list(comb))
-            for n1,n2 in comb_list:
-                and_list = set(make_divisors(n1)) & set(make_divisors(n2))
-                if len(and_list) != 0:
-                    break
-        if c % 3 == 0:
-            fmax = fmax + 3
-            list_original = [i for i in peaks if (i <= fmax) and (i >= 70)]
-            div_list = list_original
-            comb_list = []
-            c = 0
-        elif c != 0:
-            newlist1 = [n+c for n in list_original]
-            newlist2 = [n-c for n in list_original]
-            div_list += newlist1
-            div_list += newlist2
-                
-        c = c + 1
-
-    fo = list(and_list)[0]
 
     even = sum(s_power[peaks[1::2]])
     odd = sum(s_power[peaks[2::2]])
     if odd + even == 0:
         odd_per = 0
         even_per = 0
-        return fo, s_power, freqs, peaks, odd, even, odd_per, even_per
+        return ave_fo, s_power, freqs, peaks, odd, even, odd_per, even_per
     else:
         odd_per = odd * 100 / (odd + even)
         even_per = even * 100 / (odd + even)
 
-    return fo, s_power, freqs, peaks, odd, even, odd_per, even_per
+    return ave_fo, s_power, freqs, peaks, odd, even, odd_per, even_per
 
 
 @st.cache_data
