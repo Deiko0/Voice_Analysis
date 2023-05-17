@@ -41,8 +41,8 @@ def make_divisors(n):
             if i != n // i:
                 upper_divisors.append(n//i)
         i += 1
-    ud = [i for i in upper_divisors if (i <= 400) and (i >= 70)]
-    ld = [i for i in lower_divisors if (i <= 400) and (i >= 70)]
+    ud = [i for i in upper_divisors if (i <= 300) and (i >= 70)]
+    ld = [i for i in lower_divisors if (i <= 300) and (i >= 70)]
     return ld + ud[::-1]
 
 @st.cache_data
@@ -61,12 +61,12 @@ def calc_spec(wav, sr):
 
     peaks = signal.argrelmax(s_power, order=70)[0]
     
-    list_original = [i for i in peaks if (i <= 400) and (i >= 70)]
+    list_original = [i for i in peaks if (i <= 300) and (i >= 70)]
     div_list = list_original
     comb_list = []
     and_list = set()
     c = 0
-    fmax = 400
+    fmax = 300
     
     while len(and_list) == 0:
         for comb in itertools.combinations(div_list,2):
@@ -96,7 +96,7 @@ def calc_spec(wav, sr):
     if odd + even == 0:
         odd_per = 0
         even_per = 0
-        return ave_fo, s_power, freqs, peaks, odd, even, odd_per, even_per
+        return fo, s_power, freqs, peaks, odd, even, odd_per, even_per
     else:
         odd_per = odd * 100 / (odd + even)
         even_per = even * 100 / (odd + even)
