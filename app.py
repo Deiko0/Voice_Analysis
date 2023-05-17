@@ -17,6 +17,8 @@ from pysndfx import AudioEffectsChain
 HOP = 1000
 GRAPH_WIDTH = 1200
 GRAPH_HEIGHT = 300
+fmin = 70
+fmax = 300
 
 st.set_page_config(
     page_title="Voice Analysis",
@@ -30,6 +32,19 @@ st.set_page_config(
     },
 )
 
+@st.cache_data
+def make_divisors(n):
+    lower_divisors , upper_divisors = [], []
+    i = 1
+    while i*i <= n:
+        if n % i == 0:
+            lower_divisors.append(i)
+            if i != n // i:
+                upper_divisors.append(n//i)
+        i += 1
+    ud = [i for i in upper_divisors if (i <= fmax) and (i >= fmin)]
+    ld = [i for i in lower_divisors if (i <= fmax) and (i >= fmin)]
+    return ld + ud[::-1]
 
 @st.cache_data
 def measurePitch(wav):
@@ -69,12 +84,13 @@ def calc_spec(wav, sr):
             div_list = list_original
             comb_list = []
             c = 0
-            elif c != 0:
-                newlist1 = [n+c for n in list_original]
-                newlist2 = [n-c for n in list_original]
-                div_list += newlist1
-                div_list += newlist2
-            c = c + 1
+        elif c != 0:
+            newlist1 = [n+c for n in list_original]
+            newlist2 = [n-c for n in list_original]
+            div_list += newlist1
+            div_list += newlist2
+                
+        c = c + 1
 
     fo = list(and_list)[0]
 
