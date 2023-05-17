@@ -77,7 +77,7 @@ def calc_spec(wav, sr):
                     break
         if c % 3 == 0:
             fmax = fmax + 3
-            list_original = [i for i in peaks if (i <= fmax) and (i >= fmin)]
+            list_original = [i for i in peaks if (i <= fmax) and (i >= 70)]
             div_list = list_original
             comb_list = []
             c = 0
