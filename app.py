@@ -33,8 +33,6 @@ st.set_page_config(
 
 @st.cache_data
 def make_divisors(n):
-    fmin = 70
-    fmax = 300
     lower_divisors , upper_divisors = [], []
     i = 1
     while i*i <= n:
@@ -43,8 +41,8 @@ def make_divisors(n):
             if i != n // i:
                 upper_divisors.append(n//i)
         i += 1
-    ud = [i for i in upper_divisors if (i <= fmax) and (i >= fmin)]
-    ld = [i for i in lower_divisors if (i <= fmax) and (i >= fmin)]
+    ud = [i for i in upper_divisors if (i <= 400) and (i >= 70)]
+    ld = [i for i in lower_divisors if (i <= 400) and (i >= 70)]
     return ld + ud[::-1]
 
 @st.cache_data
@@ -57,20 +55,18 @@ def measurePitch(wav):
 
 @st.cache_data
 def calc_spec(wav, sr):
-    fmin = 70
-    fmax = 300
-
     spectrum = np.abs(np.fft.fft(wav, sr)[: int(sr / 2)])
     freqs = np.fft.fftfreq(sr, d=1.0 / sr)[: int(sr / 2)]
     s_power = np.abs(spectrum) ** 2
 
-    peaks = signal.argrelmax(s_power, order=fmin)[0]
+    peaks = signal.argrelmax(s_power, order=70)[0]
     
-    list_original = [i for i in peaks if (i <= fmax) and (i >= fmin)]
+    list_original = [i for i in peaks if (i <= 400) and (i >= 70)]
     div_list = list_original
     comb_list = []
     and_list = set()
     c = 0
+    fmax = 400
     
     while len(and_list) == 0:
         for comb in itertools.combinations(div_list,2):
