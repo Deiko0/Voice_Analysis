@@ -411,14 +411,14 @@ def main():
 
                 if hnr > 14:
                     if ave_fo > 165:
-                        if odd_per + 10 > even_per:
+                        if odd_per > even_per + 10:
                             type = "あなたの声は【元気】、【エネルギー】タイプです！"
                             img_path = "images/energy.png"
                         else:
                             type = "あなたの声は【透明】、【ピュア】タイプです！"
                             img_path = "images/pure.png"
                     else:
-                        if odd_per + 10 > even_per:
+                        if odd_per > even_per + 10:
                             type = "あなたの声は【勇敢】、【リーダー】タイプです！"
                             img_path = "images/leader.png"
                         else:
