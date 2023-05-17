@@ -179,8 +179,8 @@ def draw_spectrum(freqs, s_power, peaks):
 def draw_result(ave_fo, hnr, even_per, odd_per):
     fig = make_subplots(rows=3, cols=1)
 
-    clip_ave_fo = np.clip(ave_fo, 80, 250)
-    New_fo_Value = (((clip_ave_fo - 80) * 10) / 170) - 5
+    clip_ave_fo = np.clip(ave_fo, 70, 400)
+    New_fo_Value = (((clip_ave_fo - 70) * 10) / 170) - 5
     if New_fo_Value > 0:
         fo_color = "#e3619f"
     else:
