@@ -17,8 +17,6 @@ from pysndfx import AudioEffectsChain
 HOP = 1000
 GRAPH_WIDTH = 1200
 GRAPH_HEIGHT = 300
-fmin = 70
-fmax = 300
 
 st.set_page_config(
     page_title="Voice Analysis",
@@ -56,7 +54,8 @@ def measurePitch(wav):
 
 @st.cache_data
 def calc_spec(wav, sr):
-
+    fmin = 70
+    fmax = 300
 
     spectrum = np.abs(np.fft.fft(wav, sr)[: int(sr / 2)])
     freqs = np.fft.fftfreq(sr, d=1.0 / sr)[: int(sr / 2)]
