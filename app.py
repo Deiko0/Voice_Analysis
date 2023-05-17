@@ -447,7 +447,7 @@ def main():
                 result_img = draw_result(ave_fo, hnr, even_per, odd_per)
                 col5.image(result_img)
 
-                if hnr > 14:
+                if hnr > 13:
                     if ave_fo > 150:
                         if odd_per > even_per + 10:
                             type = "あなたの声は【元気】、【エネルギー】タイプです！"
