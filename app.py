@@ -426,14 +426,14 @@ def main():
                             img_path = "images/cool.png"
                 else:
                     if ave_fo > 165:
-                        if odd_per + 10 > even_per:
+                        if odd_per > even_per + 10:
                             type = "あなたの声は【愛嬌】、【フレンド】タイプです！"
                             img_path = "images/friend.png"
                         else:
                             type = "あなたの声は【甘い】、【ソフト】タイプです！"
                             img_path = "images/soft.png"
                     else:
-                        if odd_per + 10 > even_per:
+                        if odd_per > even_per + 10:
                             type = "あなたの声は【妖艶】、【エレガント】タイプです！"
                             img_path = "images/elegant.png"
                         else:
