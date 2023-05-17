@@ -180,7 +180,7 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
     fig = make_subplots(rows=3, cols=1)
 
     clip_ave_fo = np.clip(ave_fo, 70, 400)
-    New_fo_Value = (((clip_ave_fo - 70) * 10) / 170) - 5
+    New_fo_Value = (((clip_ave_fo - 70) * 10) / 330) - 5
     if New_fo_Value > 0:
         fo_color = "#e3619f"
     else:
@@ -220,8 +220,8 @@ def draw_result(ave_fo, hnr, even_per, odd_per):
         font_size=30,
     )
 
-    clip_hnr = np.clip(hnr, 7, 17)
-    New_hnr_Value = (((clip_hnr - 7) * 10) / 10) - 5
+    clip_hnr = np.clip(hnr, 9, 17)
+    New_hnr_Value = (((clip_hnr - 9) * 10) / 8) - 5
     if New_hnr_Value > 0:
         hnr_color = "#e3619f"
     else:
