@@ -318,8 +318,6 @@ def draw_result(filename,ave_fo, hnr, even_per, odd_per):
     csv = df.to_csv(index=False)
     b64 = base64.b64encode(csv.encode('utf-8-sig')).decode()
     href = f'<a href="data:application/octet-stream;base64,{b64}" download="{filename}.csv">Download</a>'
-    print(b64)
-    print(href)
     return img,img_type,df,href,type1,type2
 
 
