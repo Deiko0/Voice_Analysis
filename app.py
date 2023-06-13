@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from PIL import Image
 import pandas as pd
-import base64
+import pybase64
 import librosa
 import parselmouth
 from parselmouth.praat import call
@@ -316,7 +316,7 @@ def draw_result(filename,ave_fo, hnr, even_per, odd_per):
     )
 
     csv = df.to_csv(index=False)
-    b64 = base64.b64encode(csv.encode()).decode()
+    b64 = pybase64.b64encode(csv.encode()).decode()
     href = f'<a href="data:application/octet-stream;base64,{b64}" download="{filename}.csv">Download</a>'
 
     return img,img_type,df,href,type1,type2
@@ -326,7 +326,7 @@ def draw_result(filename,ave_fo, hnr, even_per, odd_per):
 def get_binary_file_downloader_html(bin_file, file_label='File', extension=""):
     with open(bin_file, 'rb') as f:
         data = f.read()
-    bin_str = base64.b64encode(data).decode()
+    bin_str = pybase64.b64encode(data).decode()
     href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{file_label}_eq.wav">Download</a>'
     return href
 
