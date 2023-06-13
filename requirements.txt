@@ -3,7 +3,7 @@ appdirs==1.4.4
 attrs==23.1.0
 audioread==3.0.0
 blinker==1.6.2
-cachetools==4.2.2
+cachetools==4.2.4
 certifi==2023.5.7
 cffi==1.15.1
 charset-normalizer==3.1.0
